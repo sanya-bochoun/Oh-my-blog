@@ -3,6 +3,7 @@ import { BsBell } from 'react-icons/bs';
 import { AiOutlineLike, AiOutlineComment } from 'react-icons/ai';
 import { FaRegNewspaper } from 'react-icons/fa';
 import { FiTrash2, FiLoader } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
@@ -11,6 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const SOCKET_URL = API_URL.replace('/api', '');
 
 const NotificationBell = () => {
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,8 @@ const NotificationBell = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setActivities(response.data.data.activities || []);
+      const activities = response.data.data.activities || [];
+      setActivities(activities);
     } catch (error) {
       toast.error('Unable to fetch activities');
       console.error('Error fetching activities:', error);
@@ -73,7 +76,11 @@ const NotificationBell = () => {
     }
   };
 
-  const deleteNotification = async (notificationId) => {
+  const deleteNotification = async (notificationId, event) => {
+    // ป้องกัน event bubbling เพื่อไม่ให้ navigate ไปยังบทความ
+    if (event) {
+      event.stopPropagation();
+    }
     try {
       const token = localStorage.getItem('accessToken');
       await axios.delete(`${API_URL}/api/notifications/${notificationId}`, {
@@ -86,6 +93,68 @@ const NotificationBell = () => {
     } catch (error) {
       toast.error('Unable to delete notification');
       console.error('Error deleting notification:', error);
+    }
+  };
+
+  const handleNotificationClick = async (activity) => {
+    // สร้าง link จาก activity.link หรือจาก data.post_id
+    let link = activity.link;
+    
+    // ถ้าไม่มี link ให้สร้างจาก data
+    if (!link && activity.data) {
+      try {
+        const data = typeof activity.data === 'string' ? JSON.parse(activity.data) : activity.data;
+        
+        if (data.post_id) {
+          // ถ้ามี slug ใน data ก็ใช้ slug
+          if (data.post_slug) {
+            link = `/article/${data.post_slug}`;
+          } else {
+            // ถ้าไม่มี slug ให้ fetch จาก API
+            try {
+              const token = localStorage.getItem('accessToken');
+              const response = await axios.get(`${API_URL}/api/articles/detail/${data.post_id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              });
+              if (response.data.data?.slug) {
+                link = `/article/${response.data.data.slug}`;
+              } else {
+                link = `/article/${data.post_id}`;
+              }
+            } catch {
+              link = `/article/${data.post_id}`;
+            }
+          }
+        }
+      } catch {
+        // Silent error handling
+      }
+    }
+    
+    // ถ้ายังไม่มี link และมี post_id ใน data (จาก JOIN ใน query)
+    if (!link && activity.data) {
+      try {
+        const data = typeof activity.data === 'string' ? JSON.parse(activity.data) : activity.data;
+        if (data.post_id) {
+          link = `/article/${data.post_id}`;
+        }
+      } catch {
+        // Silent error handling
+      }
+    }
+    
+    if (link) {
+      // ตรวจสอบว่า link ไม่มี leading slash ซ้ำ
+      link = link.startsWith('/') ? link : `/${link}`;
+      // ถ้ามี /article/article ให้ลบซ้ำ
+      link = link.replace(/\/article\/article\//, '/article/');
+      
+      setShowDropdown(false); // ปิด dropdown
+      navigate(link);
+    } else {
+      toast.error('ไม่พบลิงก์ไปยังบทความ');
     }
   };
 
@@ -145,7 +214,7 @@ const NotificationBell = () => {
       <button
         ref={buttonRef}
         onClick={() => setShowDropdown(!showDropdown)}
-        className="p-2 hover:bg-gray-100 rounded-full relative"
+        className="p-2 hover:bg-gray-100 rounded-full relative cursor-pointer"
       >
         <BsBell className="text-xl" />
         {activities.length > 0 && (
@@ -191,7 +260,10 @@ const NotificationBell = () => {
                 {activities.map((activity) => (
                   <div
                     key={`${activity.type}-${activity.id}`}
-                    className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors group"
+                    onClick={() => handleNotificationClick(activity)}
+                    className={`flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors group ${
+                      activity.link ? 'cursor-pointer' : ''
+                    }`}
                   >
                     <div className="shrink-0 mt-1">
                       {getActivityIcon(activity.type)}
@@ -215,7 +287,7 @@ const NotificationBell = () => {
                         />
                       )}
                       <button
-                        onClick={() => deleteNotification(activity.id)}
+                        onClick={(e) => deleteNotification(activity.id, e)}
                         className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         title="Delete notification"
                       >
