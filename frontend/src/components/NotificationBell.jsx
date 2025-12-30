@@ -58,7 +58,7 @@ const NotificationBell = () => {
     try {
       setClearing(true);
       const token = localStorage.getItem('accessToken');
-      await axios.put(`${API_URL}/api/notifications/read-all`, {}, {
+      await axios.delete(`${API_URL}/api/notifications/all`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -162,12 +162,12 @@ const NotificationBell = () => {
         >
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Recent Activities</h3>
+              <h3 className="text-lg font-semibold text-left">Recent Activities</h3>
               {activities.length > 0 && (
                 <button
                   onClick={clearAllNotifications}
                   disabled={clearing}
-                  className="flex items-center text-sm text-red-600 hover:text-red-700 disabled:opacity-50"
+                  className="flex items-center text-sm text-red-600 hover:text-red-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                 >
                   {clearing ? (
                     <FiLoader className="w-4 h-4 mr-1 animate-spin" />
@@ -196,13 +196,13 @@ const NotificationBell = () => {
                     <div className="shrink-0 mt-1">
                       {getActivityIcon(activity.type)}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800">
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className="text-sm text-gray-800 text-left">
                         <span className="font-medium">{activity.user_name || 'User'}</span>
                         {' '}
                         {getActivityMessage(activity)}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-1 text-left">
                         {new Date(activity.created_at).toLocaleString('en-US')}
                       </p>
                     </div>
@@ -216,7 +216,7 @@ const NotificationBell = () => {
                       )}
                       <button
                         onClick={() => deleteNotification(activity.id)}
-                        className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         title="Delete notification"
                       >
                         <FiTrash2 className="w-4 h-4" />
