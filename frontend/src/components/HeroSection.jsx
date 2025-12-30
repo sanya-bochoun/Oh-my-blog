@@ -18,7 +18,7 @@ const HeroSection = () => {
             <article className="hero-text-section flex flex-col justify-center w-full md:w-1/3 mt-[52px] md:mt-[60px]">
               <div className="hero-text-card bg-[#F9F8F8] rounded-lg p-[16px] md:p-6 text-right w-full">
                 <div className="title-container h-[96px] md:h-auto">
-                  <h1 className="hero-title font-poppins font-semibold text-[#26231E] text-center md:text-right"> 
+                  <h1 className="hero-title font-semibold text-[#26231E] text-center md:text-right"> 
                     <span className="block font-bold text-[44px] sm:text-[56px] md:text-[65px] leading-tight mb-4 text-left md:text-right">Stay</span>
                     <span className="block font-semibold text-[22px] sm:text-[32px] md:text-[40px] leading-tight mb-6 text-left md:text-right">Curious,<br/> Stay Motivated</span>
                   </h1>
@@ -54,20 +54,20 @@ const HeroSection = () => {
             <aside className="author-section flex flex-col justify-center w-full md:w-1/3 pb-[24px] md:pb-0 mt-4 md:mt-[60px]">
               <div className="author-card bg-[#F9F8F8] rounded-lg p-[16px] md:p-6 text-left w-full">
                 <div className="author-label-wrapper flex items-start mb-2">
-                  <span className="author-label font-poppins font-medium text-[#75716B] text-left text-[12px] leading-[20px] h-[20px]">
+                  <span className="author-label font-medium text-[#75716B] text-left text-[12px] leading-[20px] h-[20px]">
                     {authorLabel}
                   </span>
                 </div>
                 
-                <h3 className="author-name font-poppins font-semibold text-[#26231E] text-[24px] leading-[32px] text-left mb-3">
+                <h3 className="author-name font-semibold text-[#26231E] text-[24px] leading-[32px] text-left mb-3">
                   {authorName}
                 </h3>
                 
                 <div className="author-bio-container">
-                  <p className="author-bio font-poppins font-medium text-[#75716B] text-[16px] leading-[24px] text-left">
+                  <p className="author-bio font-medium text-[#75716B] text-[16px] leading-[24px] text-left">
                     {authorBio}
                   </p>
-                  <p className="author-bio-extra font-poppins font-medium text-[#75716B] text-[16px] leading-[24px] text-left mt-4">
+                  <p className="author-bio-extra font-medium text-[#75716B] text-[16px] leading-[24px] text-left mt-4">
                     {authorExtraBio}
                   </p>
                 </div>

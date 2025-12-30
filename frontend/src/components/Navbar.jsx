@@ -46,13 +46,13 @@ const Navbar = () => {
       <div className="md:w-full sm:container mx-auto w-[375px]">
         <div className="flex items-center justify-between h-[48px] sm:h-[80px] px-[24px] sm:px-8 lg:px-[120px]">
           {/* Logo Section */}
-          <div className="flex items-center cursor-pointer">
+          <Link to="/" className="flex items-center cursor-pointer">
             <img
               src={logo}
               alt="logo"
               className="w-[90px] h-[40px] sm:w-[150px] sm:h-[150px]"
             />
-          </div>
+          </Link>
           {/* Mobile Menu Button */}
           <div className="block sm:hidden focus:outline-none">
             <button

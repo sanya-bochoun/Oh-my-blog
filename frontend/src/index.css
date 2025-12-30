@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
@@ -330,4 +328,369 @@ body {
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+}
+
+/* a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 999px;
+  border: 1px solid #75716B;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--white);
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+} */
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Responsive Design for Mobile (375px) */
+@media only screen and (max-width: 375px) {
+  :root {
+    /* ปรับขนาด headline สำหรับหน้าจอมือถือ */
+    --headline-1-size: 32px;
+    --headline-1-line-height: 40px;
+    
+    --headline-2-size: 28px;
+    --headline-2-line-height: 36px;
+    
+    --headline-3-size: 20px;
+    --headline-3-line-height: 28px;
+    
+    --headline-4-size: 18px;
+    --headline-4-line-height: 24px;
+  }
+  
+  /* ปรับขนาดปุ่มสำหรับหน้าจอมือถือ */
+  .btn, .btn-primary, .btn-secondary {
+    height: 40px;
+    padding: 8px 24px;
+  }
+  
+  /* ปรับการจัดวางองค์ประกอบทั่วไป */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  /* ปรับระยะห่างระหว่างองค์ประกอบ */
+  .section {
+    margin-bottom: 24px;
+  }
+}
+
+/* Markdown Styles */
+.markdown {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.markdown :is(h2) {
+  margin-top: 32px;
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.markdown :is(h3, h4, h5, h6) {
+  margin-top: 32px;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.markdown p:not(:is(h2, h3, h4, h5, h6) + p) {
+  margin-top: 22px;
+}
+
+.markdown :is(ul, ol) {
+  list-style-position: outside;
+}
+
+.markdown :is(ul) {
+  list-style-type: "•";
+}
+
+.markdown :is(ol) {
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+.markdown :is(a) {
+  text-decoration: underline;
+}
+
+.markdown :is(a):hover {
+  text-decoration: underline;
+  color: #726d67;
+  cursor: pointer;
+}
+
+.markdown :is(ul) li {
+  margin-block: 8px;
+  padding-inline-start: 8px;
+  padding-left: 5px;
+  margin-left: 10px;
+}
+
+.markdown :is(ol) li {
+  margin-block: 8px;
+  padding-inline-start: 8px;
+  padding-left: 3px;
+  margin-left: 10px;
+}
+
+.markdown :is(blockquote) {
+  border-left: 3px solid #26231e;
+  margin: 1.5em 10px;
+  padding-left: 10px;
+  font-style: italic;
+}
+
+.markdown :is(hr) {
+  border: none;
+  border-top: 2.5px solid #d1d5db;
+  margin: 1.5em 0;
+  width: 30%;
+}
+
+.markdown img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2em 0;
+  border-radius: 12px;
+}
+
+/* Blog Card Styles */
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  height: 100%;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card-image {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #f3f4f6;
+  position: relative;
+}
+
+.blog-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.blog-card:hover .blog-card-image img {
+  transform: scale(1.05);
+}
+
+.blog-card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.blog-card-category {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #75716B;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.blog-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #26231E;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+}
+
+.blog-card-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+}
+
+.blog-card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  text-align: left;
+}
+
+.blog-card-author img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blog-card-author p {
+  font-size: 14px;
+  font-weight: 500;
+  color: #26231E;
+  margin: 0;
+  text-align: left;
+}
+
+.blog-card-author span {
+  font-size: 12px;
+  color: #75716B;
+  display: block;
+  text-align: left;
 }
