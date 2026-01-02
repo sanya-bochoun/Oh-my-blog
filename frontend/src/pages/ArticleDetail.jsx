@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -23,7 +23,7 @@ const ArticleDetail = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   // ดึงคอมเมนต์
-  const fetchComments = async (postId) => {
+  const fetchComments = useCallback(async (postId) => {
     try {
       setCommentLoading(true);
       const response = await axios.get(`${API_URL}/api/comments/post/${postId}`);
@@ -41,7 +41,7 @@ const ArticleDetail = () => {
     } finally {
       setCommentLoading(false);
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -50,7 +50,7 @@ const ArticleDetail = () => {
         if (response.data.status === 'success') {
           console.log('Article Data:', response.data.data);
           setArticle(response.data.data);
-          setLikeCount(response.data.data.like_count || 0);
+          setLikeCount(Number(response.data.data.like_count) || 0);
           fetchComments(response.data.data.id);
         } else {
           setError('ไม่สามารถโหลดบทความได้');
@@ -83,7 +83,7 @@ const ArticleDetail = () => {
     if (article?.id) {
       checkLikeStatus();
     }
-  }, [slug, API_URL, article?.id]);
+  }, [slug, API_URL, article?.id, fetchComments]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -106,7 +106,10 @@ const ArticleDetail = () => {
 
       if (response.status === 201 || response.status === 200) {
         setHasLiked(!hasLiked);
-        setLikeCount(prevCount => hasLiked ? prevCount - 1 : prevCount + 1);
+        setLikeCount(prevCount => {
+          const currentCount = Number(prevCount) || 0;
+          return hasLiked ? currentCount - 1 : currentCount + 1;
+        });
       }
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -357,7 +360,7 @@ const ArticleDetail = () => {
                   <div className="font-medium text-xs sm:text-sm">{article['Author.username']}</div>
                 </div>
               </div>
-              <div className="w-full h-[1px] bg-[#DAD6D1] my-3 sm:my-4"></div>
+              <div className="w-full h-px bg-[#DAD6D1] my-3 sm:my-4"></div>
               <div className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                 {article['Author.bio'] && article['Author.bio'].trim() !== ''
                   ? article['Author.bio']

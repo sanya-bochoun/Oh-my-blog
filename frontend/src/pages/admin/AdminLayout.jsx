@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "../../hooks/useAuth";
 import { toast } from "sonner";
+import logo from "../../assets/logo.svg";
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -77,8 +78,14 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-sm">
         <div className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900">hh.</h2>
-          <p className="text-orange-400 mt-1">Admin panel</p>
+          <Link to="/" className="flex items-center justify-center">
+            <img
+              src={logo}
+              alt="logo"
+              className="w-[70px] h-[30px] sm:w-[120px] sm:h-[50px]"
+            />
+          </Link>
+          <p className="text-orange-400 mt-1 text-center">Admin panel</p>
         </div>
 
         <nav className="mt-6">
@@ -111,7 +118,7 @@ const AdminLayout = () => {
             className="flex items-center text-sm text-gray-600 hover:text-gray-900"
           >
             <FiHome className="w-5 h-5 mr-3" />
-            hh. website
+            <strong>Oh!myBlog.</strong> <span className="text-gray-500 ml-1.5">website</span>
           </Link>
           <button
             onClick={handleLogout}

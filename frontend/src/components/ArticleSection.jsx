@@ -117,7 +117,6 @@ const ArticleSection = () => {
       });
       
       // Format dates before setting posts
-      console.log('Raw posts from backend:', data.data.posts); // log posts
       const formattedPosts = data.data.posts.map(post => ({
         ...post,
         date: formatDate(post.created_at || post.date),

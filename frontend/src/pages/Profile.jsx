@@ -92,7 +92,6 @@ const Profile = () => {
           throw new Error(data.message || 'เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ');
         }
       } catch (err) {
-        console.error('Error details:', err);
         toast.error(err.message || 'เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ');
       } finally {
         setIsSubmitting(false);
