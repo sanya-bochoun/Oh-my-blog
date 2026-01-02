@@ -86,17 +86,17 @@ function CreateArticle() {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        toast.error('กรุณาเข้าสู่ระบบก่อนบันทึกบทความ');
+        toast.error('Please log in to save article');
         navigate('/login');
         return;
       }
 
       if (!formData.title.trim()) {
-        toast.error('กรุณากรอกชื่อบทความ');
+        toast.error('Please enter article title');
         return;
       }
       if (!formData.category) {
-        toast.error('กรุณาเลือกหมวดหมู่');
+        toast.error('Please select category');
         return;
       }
 
@@ -123,20 +123,26 @@ function CreateArticle() {
       const response = await api.post(`${API_URL}/api/articles`, formDataToSend, {
         headers: {
           'Authorization': `Bearer ${token}`
+          // ไม่ต้อง set Content-Type เพราะ browser จะ set ให้อัตโนมัติพร้อม boundary
         },
       });
 
       if (response.data.status === 'success') {
-        toast.success('บันทึกบทความเป็นฉบับร่างเรียบร้อยแล้ว');
+        toast.success('Article saved as draft successfully');
         navigate('/article-management');
       } else {
-        toast.error('เกิดข้อผิดพลาดในการบันทึกบทความ');
+        toast.error('Failed to save article');
       }
     } catch (error) {
       console.error('Error saving article as draft:', error);
       console.error('Error response:', error.response?.data);
-      if (error.response?.status === 403) {
-        toast.error('ไม่มีสิทธิ์ในการบันทึกบทความ กรุณาเข้าสู่ระบบใหม่');
+      
+      // จัดการ error 401 (Token หมดอายุ) และ 403 (ไม่มีสิทธิ์)
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        // Clear token และ user data
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        toast.error(error.response?.data?.message || 'Please log in again');
         navigate('/login');
       } else {
         toast.error(error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกบทความ');
@@ -151,21 +157,21 @@ function CreateArticle() {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        toast.error('กรุณาเข้าสู่ระบบก่อนเผยแพร่บทความ');
+        toast.error('Please log in to publish article');
         navigate('/login');
         return;
       }
 
       if (!formData.title.trim()) {
-        toast.error('กรุณากรอกชื่อบทความ');
+        toast.error('Please enter article title');
         return;
       }
       if (!formData.category) {
-        toast.error('กรุณาเลือกหมวดหมู่');
+        toast.error('Please select category');
         return;
       }
       if (!formData.content.trim()) {
-        toast.error('กรุณากรอกเนื้อหาบทความ');
+        toast.error('Please enter article content');
         return;
       }
 
@@ -192,20 +198,26 @@ function CreateArticle() {
       const response = await api.post(`${API_URL}/api/articles`, formDataToSend, {
         headers: {
           'Authorization': `Bearer ${token}`
+          // ไม่ต้อง set Content-Type เพราะ browser จะ set ให้อัตโนมัติพร้อม boundary
         },
       });
 
       if (response.data.status === 'success') {
-        toast.success('เผยแพร่บทความเรียบร้อยแล้ว');
+        toast.success('Article published successfully');
         navigate('/article-management');
       } else {
-        toast.error('เกิดข้อผิดพลาดในการเผยแพร่บทความ');
+        toast.error('Failed to publish article');
       }
     } catch (error) {
       console.error('Error publishing article:', error);
       console.error('Error response:', error.response?.data);
-      if (error.response?.status === 403) {
-        toast.error('ไม่มีสิทธิ์ในการเผยแพร่บทความ กรุณาเข้าสู่ระบบใหม่');
+      
+      // จัดการ error 401 (Token หมดอายุ) และ 403 (ไม่มีสิทธิ์)
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        // Clear token และ user data
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        toast.error(error.response?.data?.message || 'Please log in again');
         navigate('/login');
       } else {
         toast.error(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเผยแพร่บทความ');

@@ -26,7 +26,7 @@ const AdminLayout = () => {
   const handleLogout = () => {
     logout();
     localStorage.removeItem("accessToken");
-    toast.success("ออกจากระบบสำเร็จ");
+    toast.success("Logged out successfully");
     navigate("/");
   };
 
@@ -78,7 +78,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-sm">
         <div className="p-6">
-          <Link to="/" className="flex items-center justify-center">
+          <Link to="/" className="flex items-center justify-center cursor-pointer">
             <img
               src={logo}
               alt="logo"
@@ -98,7 +98,7 @@ const AdminLayout = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center px-6 py-3 text-sm ${
+                  className={`flex items-center px-6 py-3 text-sm cursor-pointer ${
                     isActiveRoute(item.path)
                       ? "text-gray-900 bg-gray-100"
                       : "text-gray-600 hover:bg-gray-50"
@@ -115,7 +115,7 @@ const AdminLayout = () => {
         <div className="mt-auto p-6 border-t">
           <Link
             to="/"
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
           >
             <FiHome className="w-5 h-5 mr-3" />
             <strong>Oh!myBlog.</strong> <span className="text-gray-500 ml-1.5">website</span>

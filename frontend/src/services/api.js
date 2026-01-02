@@ -14,6 +14,10 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    // ถ้าเป็น FormData ไม่ต้อง set Content-Type (ให้ browser set อัตโนมัติ)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -42,6 +46,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (refreshError) {
           // refresh ไม่สำเร็จ → logout
+          console.error('Token refresh failed:', refreshError);
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');

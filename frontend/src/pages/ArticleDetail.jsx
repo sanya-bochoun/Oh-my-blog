@@ -49,9 +49,37 @@ const ArticleDetail = () => {
         const response = await axios.get(`${API_URL}/api/articles/detail/${slug}`);
         if (response.data.status === 'success') {
           console.log('Article Data:', response.data.data);
-          setArticle(response.data.data);
-          setLikeCount(Number(response.data.data.like_count) || 0);
-          fetchComments(response.data.data.id);
+          const articleData = response.data.data;
+          setArticle(articleData);
+          setLikeCount(Number(articleData.like_count) || 0);
+          fetchComments(articleData.id);
+          
+          // ตรวจสอบสถานะ like หลังจากโหลด article สำเร็จ
+          const checkLikeStatus = async () => {
+            try {
+              const token = localStorage.getItem('accessToken');
+              
+              // เรียก API ได้แม้ไม่มี token (optional auth)
+              const config = token 
+                ? { headers: { Authorization: `Bearer ${token}` } }
+                : {};
+              
+              const likeResponse = await axios.get(
+                `${API_URL}/api/likes/articles/${articleData.id}/check`,
+                config
+              );
+              setHasLiked(likeResponse.data.hasLiked || false);
+            } catch (error) {
+              // ถ้า error ก็ set เป็น false (ไม่ได้ login หรือ error อื่นๆ)
+              setHasLiked(false);
+              // ไม่ log error ถ้าเป็น 403 เพราะอาจเป็นเพราะไม่ได้ login
+              if (error.response?.status !== 403) {
+                console.error('Error checking like status:', error);
+              }
+            }
+          };
+          
+          checkLikeStatus();
         } else {
           setError('ไม่สามารถโหลดบทความได้');
         }
@@ -62,28 +90,8 @@ const ArticleDetail = () => {
       }
     };
 
-    const checkLikeStatus = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        if (!token) return;
-
-        const response = await axios.get(
-          `${API_URL}/api/likes/articles/${article?.id}/check`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        setHasLiked(response.data.hasLiked);
-      } catch (error) {
-        console.error('Error checking like status:', error);
-      }
-    };
-
     fetchArticle();
-    if (article?.id) {
-      checkLikeStatus();
-    }
-  }, [slug, API_URL, article?.id, fetchComments]);
+  }, [slug, API_URL, fetchComments]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -142,10 +150,10 @@ const ArticleDetail = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url)
       .then(() => {
-        toast.success('คัดลอกลิงก์เรียบร้อยแล้ว!');
+        toast.success('Link copied successfully!');
       })
       .catch(() => {
-        toast.error('ไม่สามารถคัดลอกลิงก์ได้');
+        toast.error('Failed to copy link');
       });
   };
 

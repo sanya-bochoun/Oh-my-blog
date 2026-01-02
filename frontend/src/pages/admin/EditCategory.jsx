@@ -27,7 +27,7 @@ const EditCategory = () => {
         setDescription(category.description || '');
       } catch (error) {
         console.error('Error fetching category:', error);
-        toast.error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
+        toast.error('Failed to fetch category');
         navigate('/admin/category-management');
       }
     };
@@ -55,11 +55,11 @@ const EditCategory = () => {
           }
         }
       );
-      toast.success('แก้ไขหมวดหมู่สำเร็จ');
+      toast.success('Category updated successfully');
       navigate('/admin/category-management');
     } catch (error) {
       console.error('Error updating category:', error);
-      toast.error(error.response?.data?.message || 'ไม่สามารถแก้ไขหมวดหมู่ได้');
+      toast.error(error.response?.data?.message || 'Failed to update category');
     }
     setShowModal(false);
   };
@@ -113,7 +113,7 @@ const EditCategory = () => {
               <h2 className="text-xl font-medium">Edit category</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 ×
               </button>
@@ -122,13 +122,13 @@ const EditCategory = () => {
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmEdit}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-[999px] hover:bg-gray-800"
+                className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-[999px] hover:bg-gray-800 cursor-pointer"
               >
                 Save
               </button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import defaultThumbnail from '../assets/default-thumbnail.jpg';
 
 const BlogCard = ({
   slug,
@@ -16,10 +17,20 @@ const BlogCard = ({
     if (onClick) onClick(slug);
   };
 
+  const handleImageError = (e) => {
+    if (e.target.src !== defaultThumbnail) {
+      e.target.src = defaultThumbnail;
+    }
+  };
+
   return (
     <article className="blog-card" onClick={handleClick}>
       <div className="blog-card-image">
-        <img src={image} alt={title} />
+        <img 
+          src={image || defaultThumbnail} 
+          alt={title}
+          onError={handleImageError}
+        />
       </div>
 
       <div className="blog-card-content">

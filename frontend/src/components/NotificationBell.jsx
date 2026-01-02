@@ -154,7 +154,7 @@ const NotificationBell = () => {
       setShowDropdown(false); // ปิด dropdown
       navigate(link);
     } else {
-      toast.error('ไม่พบลิงก์ไปยังบทความ');
+      toast.error('Article link not found');
     }
   };
 

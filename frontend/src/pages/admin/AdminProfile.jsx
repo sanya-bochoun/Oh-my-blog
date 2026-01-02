@@ -131,7 +131,7 @@ const AdminProfile = () => {
         profilePicturePreview: updatedUserData.avatar_url || null
       });
 
-      toast.success('บันทึกโปรไฟล์สำเร็จ');
+      toast.success('Profile saved successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
       const errorMessage = error.response?.data?.message || 'Failed to update profile';

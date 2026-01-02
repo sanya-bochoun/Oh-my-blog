@@ -218,7 +218,7 @@ function ArticleManagement() {
         <div className="w-full sm:w-auto flex justify-end">
           <Link
             to="/create-article"
-            className="w-full sm:w-auto px-4 sm:px-[40px] py-[12px] sm:py-[12px] text-sm font-medium text-white bg-gray-900 rounded-[999px] hover:bg-gray-800 flex items-center gap-2 justify-center sm:justify-start"
+            className="w-full sm:w-auto px-4 sm:px-[40px] py-[12px] sm:py-[12px] text-sm font-medium text-white bg-gray-900 rounded-[999px] hover:bg-gray-800 flex items-center gap-2 justify-center sm:justify-start cursor-pointer"
           >
             <span>+</span> Create article
           </Link>
@@ -282,7 +282,7 @@ function ArticleManagement() {
           {currentItems.map((article) => (
             <div key={article.id} className="p-4 border-b border-gray-200">
               <div className="mb-2">
-                <Link to={`/article/${article.slug}`} className="text-base font-medium text-gray-900 hover:text-blue-600">
+                <Link to={`/article/${article.slug}`} className="text-base font-medium text-gray-900 hover:text-blue-600 cursor-pointer">
                   {article.title}
                 </Link>
                 <div className="text-xs text-gray-500 mt-1">Author: {article.author_name || article.authorName || article.author?.username || article.Author?.username || '-'}</div>
@@ -303,7 +303,7 @@ function ArticleManagement() {
                 <div className="flex items-center gap-4">
                   <Link
                     to={`/edit-article/${article.id}`}
-                    className="text-gray-600 hover:text-gray-900 p-2"
+                    className="text-gray-600 hover:text-gray-900 p-2 cursor-pointer"
                   >
                     <FiEdit2 className="w-5 h-5" />
                   </Link>
@@ -344,7 +344,7 @@ function ArticleManagement() {
             {currentItems.map((article) => (
               <tr key={article.id}>
                 <td className="px-6 py-4">
-                  <Link to={`/article/${article.slug}`} className="text-sm text-gray-900 hover:text-blue-600">
+                  <Link to={`/article/${article.slug}`} className="text-sm text-gray-900 hover:text-blue-600 cursor-pointer">
                     {article.title}
                   </Link>
                 </td>
@@ -371,7 +371,7 @@ function ArticleManagement() {
                   <div className="flex items-center space-x-4">
                     <Link
                       to={`/edit-article/${article.id}`}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-gray-600 hover:text-gray-900 cursor-pointer"
                       title="Edit this article"
                     >
                       <FiEdit2 className="w-5 h-5" />
@@ -397,7 +397,7 @@ function ArticleManagement() {
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-2 sm:px-3 py-1 rounded-md bg-white border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="px-2 sm:px-3 py-1 rounded-md bg-white border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
           >
             <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -406,7 +406,7 @@ function ArticleManagement() {
             <button
               key={index + 1}
               onClick={() => paginate(index + 1)}
-              className={`w-8 h-8 sm:px-3 sm:py-1 rounded-md text-sm flex items-center justify-center ${
+              className={`w-8 h-8 sm:px-3 sm:py-1 rounded-md text-sm flex items-center justify-center cursor-pointer ${
                 currentPage === index + 1
                   ? 'bg-gray-900 text-white'
                   : 'bg-white border border-gray-300 hover:bg-gray-50'
@@ -419,7 +419,7 @@ function ArticleManagement() {
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-2 sm:px-3 py-1 rounded-md bg-white border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="px-2 sm:px-3 py-1 rounded-md bg-white border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
           >
             <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -435,13 +435,13 @@ function ArticleManagement() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleCancelDelete}
-                className="px-4 sm:px-6 py-2 text-sm font-medium text-gray-700 bg-white/80 border border-gray-300 rounded-full hover:bg-gray-50"
+                className="px-4 sm:px-6 py-2 text-sm font-medium text-gray-700 bg-white/80 border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 sm:px-6 py-2 text-sm font-medium text-white bg-red-600/90 rounded-full hover:bg-red-700"
+                className="px-4 sm:px-6 py-2 text-sm font-medium text-white bg-red-600/90 rounded-full hover:bg-red-700 cursor-pointer"
               >
                 Delete
               </button>

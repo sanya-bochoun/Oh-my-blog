@@ -96,20 +96,20 @@ const ResetPassword = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('รหัสผ่านถูกเปลี่ยนเรียบร้อยแล้ว');
+        toast.success('Password changed successfully');
         setShowConfirmModal(false);
         navigate('/');
       } else {
-        throw new Error(data.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน');
+        throw new Error(data.message || 'Failed to change password');
       }
     } catch (err) {
       console.error('Error resetting password:', err);
-      toast.error(err.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน กรุณาลองใหม่อีกครั้ง');
+      toast.error(err.message || 'Failed to change password. Please try again');
       
       if (err.message.includes('current password is incorrect')) {
         setErrors(prev => ({
           ...prev,
-          current_password: 'รหัสผ่านปัจจุบันไม่ถูกต้อง'
+          current_password: 'Current password is incorrect'
         }));
       }
     } finally {

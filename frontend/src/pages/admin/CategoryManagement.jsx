@@ -80,10 +80,10 @@ const CategoryManagement = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      toast.success('ลบหมวดหมู่สำเร็จ');
+      toast.success('Category deleted successfully');
       fetchCategories();
     } catch (error) {
-      const errorMsg = error.response?.data?.error || 'ไม่สามารถลบหมวดหมู่ได้';
+      const errorMsg = error.response?.data?.error || 'Failed to delete category';
       toast.error(errorMsg);
     } finally {
       setShowDeleteModal(false);
@@ -155,13 +155,13 @@ const CategoryManagement = () => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleEdit(category.id)}
-                    className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+                    className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
                   >
                     <FiEdit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(category.id)}
-                    className="p-1.5 text-gray-500 hover:text-red-600 transition-colors"
+                    className="p-1.5 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
                   >
                     <FiTrash2 className="w-4 h-4" />
                   </button>
@@ -180,7 +180,7 @@ const CategoryManagement = () => {
               <h2 className="text-xl font-medium">Delete category</h2>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 ×
               </button>
@@ -189,13 +189,13 @@ const CategoryManagement = () => {
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-[999px] hover:bg-red-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-[999px] hover:bg-red-700 cursor-pointer"
               >
                 Delete
               </button>

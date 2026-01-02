@@ -40,7 +40,7 @@ const SocialShareBanner = ({ likes = 0, url }) => {
           </div>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="w-6 h-6 flex items-center justify-center text-white"
+            className="w-6 h-6 flex items-center justify-center text-white cursor-pointer"
           >
             ×
           </button>

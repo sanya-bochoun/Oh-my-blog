@@ -21,11 +21,11 @@ const Footer = ({
           </p>
           <div className="flex items-center space-x-3">
             <a href={linkedInUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors"> <Linkedin size={iconSize} color={iconColor} /> </a>
+              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors cursor-pointer"> <Linkedin size={iconSize} color={iconColor} /> </a>
             <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub"
-              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors"> <Github size={iconSize} color={iconColor} /> </a>
+              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors cursor-pointer"> <Github size={iconSize} color={iconColor} /> </a>
             <a href={googleUrl} target="_blank" rel="noopener noreferrer" aria-label="Email"
-              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors"> <Mail size={iconSize} color={iconColor} /> </a>
+              className="social-icon text-[#464440] hover:text-[#26231E] transition-colors cursor-pointer"> <Mail size={iconSize} color={iconColor} /> </a>
           </div>
         </div>
         {/* Center: Copyright (desktop), bottom (mobile) */}
@@ -36,19 +36,19 @@ const Footer = ({
         <div className="flex flex-row items-center gap-4 md:gap-8 mt-4 md:mt-0 md:order-3 order-2 md:ml-auto">
           <a 
             href="/contact"
-            className="contact-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors"
+            className="contact-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors cursor-pointer"
           >
             Contact Me
           </a>
           <a
             href="/about"
-            className="about-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors"
+            className="about-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors cursor-pointer"
           >
             About Me
           </a>
             <a 
               href={homeUrl} 
-              className="home-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors"
+              className="home-link font-poppins font-medium text-[#26231E] text-[16px] leading-[24px] tracking-[0%] no-underline hover:text-[#26231E] transition-colors cursor-pointer"
             >
               {homeText}
             </a>

@@ -57,7 +57,7 @@ const Navbar = () => {
           <div className="block sm:hidden focus:outline-none">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="mobile-menu-button"
+              className="mobile-menu-button cursor-pointer"
             >
               {isMenuOpen ? (
                 <svg
@@ -135,7 +135,7 @@ const Navbar = () => {
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
                       <Link
                         to="/article-management"
-                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100 whitespace-nowrap cursor-pointer"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <svg
@@ -155,7 +155,7 @@ const Navbar = () => {
                       {(user?.role === "admin" || user?.role === "editor") && (
                         <Link
                           to="/admin/article-management"
-                          className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100"
+                          className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100 cursor-pointer"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           <svg
@@ -184,7 +184,7 @@ const Navbar = () => {
                       )}
                       <Link
                         to="/profile"
-                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100"
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100 cursor-pointer"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <svg
@@ -205,7 +205,7 @@ const Navbar = () => {
 
                       <Link
                         to="/reset-password"
-                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100"
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-gray-100 cursor-pointer"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <svg
@@ -293,7 +293,7 @@ const Navbar = () => {
                 </div>
                 <Link
                   to="/article-management"
-                  className="w-full text-left flex items-center py-2 text-gray-700"
+                  className="w-full text-left flex items-center py-2 text-gray-700 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <svg className="mr-3 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -303,7 +303,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/profile"
-                  className="w-full text-left flex items-center py-2 text-gray-700"
+                  className="w-full text-left flex items-center py-2 text-gray-700 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <svg className="mr-3 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -314,7 +314,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/reset-password"
-                  className="w-full text-left flex items-center py-2 text-gray-700"
+                  className="w-full text-left flex items-center py-2 text-gray-700 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <svg className="mr-3 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -326,7 +326,7 @@ const Navbar = () => {
                 <button 
                   type="button"
                   onClick={handleLogout}
-                  className="w-full text-left flex items-center py-2 text-gray-700"
+                  className="w-full text-left flex items-center py-2 text-gray-700 cursor-pointer"
                 >
                   <svg className="mr-3 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

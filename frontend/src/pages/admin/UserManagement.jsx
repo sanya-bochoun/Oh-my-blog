@@ -92,7 +92,7 @@ class ErrorBoundary extends React.Component {
         <div className="text-center p-4">
           <h2 className="text-xl text-red-600">Something went wrong.</h2>
           <button
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
             onClick={() => window.location.reload()}
           >
             Reload Page
@@ -116,13 +116,13 @@ function DeleteConfirmationModal({ isOpen, onClose, onConfirm }) {
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50"
+            className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 cursor-pointer"
           >
             Delete
           </button>
@@ -263,11 +263,11 @@ function UserManagement() {
 
     try {
       await api.delete(`/api/admin/users/${userToDelete.id}`);
-      toast.success('ลบผู้ใช้สำเร็จ');
+      toast.success('User deleted successfully');
       fetchUsers(currentPage, searchTerm);
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error('ไม่สามารถลบผู้ใช้ได้');
+      toast.error('Failed to delete user');
     } finally {
       setDeleteModalOpen(false);
       setUserToDelete(null);
@@ -282,7 +282,7 @@ function UserManagement() {
 
   const handleRoleChange = async () => {
     if (!selectedUser || !selectedRole) {
-      toast.error('กรุณาเลือกบทบาทที่ต้องการ');
+      toast.error('Please select a role');
       return;
     }
 
@@ -298,7 +298,7 @@ function UserManagement() {
           : user
       ));
 
-      toast.success('อัพเดทบทบาทผู้ใช้สำเร็จ');
+      toast.success('User role updated successfully');
       setEditRoleModalOpen(false);
       setSelectedUser(null);
       setSelectedRole('');
@@ -313,7 +313,7 @@ function UserManagement() {
       <div className="text-center p-4">
         <div className="text-red-600">{error}</div>
         <button
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
           onClick={() => fetchUsers(currentPage, searchTerm)}
         >
           ลองใหม่
@@ -393,7 +393,7 @@ function UserManagement() {
                     {currentUser?.role === 'admin' ? (
                       <button
                         onClick={() => handleEditRole(user)}
-                        className="text-sm text-gray-900 hover:text-blue-600"
+                        className="text-sm text-gray-900 hover:text-blue-600 cursor-pointer"
                       >
                         {user.role || 'user'}
                         <span className="ml-1 text-xs text-blue-600">(Edit)</span>
@@ -421,14 +421,14 @@ function UserManagement() {
                         <>
                           <button
                             onClick={() => handleResetPassword(user.id)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-gray-500 hover:text-gray-700 cursor-pointer"
                             title="Reset Password"
                           >
                             <FiKey className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleToggleLock(user.id, user.status)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-gray-500 hover:text-gray-700 cursor-pointer"
                             title={user.status === 'locked' ? 'Unlock Account' : 'Lock Account'}
                           >
                             {user.status === 'locked' ? (
@@ -439,7 +439,7 @@ function UserManagement() {
                           </button>
                           <button
                             onClick={() => handleDeleteClick(user)}
-                            className="text-gray-500 hover:text-red-600"
+                            className="text-gray-500 hover:text-red-600 cursor-pointer"
                             title="Delete User"
                           >
                             <FiTrash2 className="w-4 h-4" />
@@ -462,7 +462,7 @@ function UserManagement() {
             <button
               key={page}
               onClick={() => fetchUsers(page, searchTerm)}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 currentPage === page
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -495,7 +495,7 @@ function UserManagement() {
                   setEditRoleModalOpen(false);
                   setSelectedUser(null);
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 ×
               </button>
@@ -522,13 +522,13 @@ function UserManagement() {
                   setEditRoleModalOpen(false);
                   setSelectedUser(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-[999px] hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRoleChange}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-[999px] hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-[999px] hover:bg-blue-700 cursor-pointer"
               >
                 Save Changes
               </button>

@@ -26,11 +26,11 @@ const CreateCategory = () => {
           }
         }
       );
-      toast.success('สร้างหมวดหมู่สำเร็จ');
+      toast.success('Category created successfully');
       navigate('/admin/category-management');
     } catch (error) {
       console.error('Error creating category:', error);
-      toast.error(error.response?.data?.message || 'ไม่สามารถสร้างหมวดหมู่ได้');
+      toast.error(error.response?.data?.message || 'Failed to create category');
     }
   };
 

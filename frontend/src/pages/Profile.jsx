@@ -54,13 +54,13 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast.error('ขนาดไฟล์ต้องไม่เกิน 2MB');
+        toast.error('File size must not exceed 2MB');
         return;
       }
 
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(file.type)) {
-        toast.error('รองรับเฉพาะไฟล์ภาพ (JPEG, PNG, GIF)');
+        toast.error('Only image files are supported (JPEG, PNG, GIF)');
         return;
       }
 
@@ -87,12 +87,12 @@ const Profile = () => {
         if (response.ok && data.status === 'success') {
           updateUser(data.data.user);
           setRefreshKey(prev => prev + 1);
-          toast.success('อัพโหลดรูปภาพสำเร็จ');
+          toast.success('Image uploaded successfully');
         } else {
-          throw new Error(data.message || 'เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ');
+          throw new Error(data.message || 'Failed to upload image');
         }
       } catch (err) {
-        toast.error(err.message || 'เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ');
+        toast.error(err.message || 'Failed to upload image');
       } finally {
         setIsSubmitting(false);
       }
@@ -108,31 +108,31 @@ const Profile = () => {
       formData.username === user.username &&
       bioText === user.bio
     ) {
-      toast.info("ไม่มีการเปลี่ยนแปลงข้อมูล");
+      toast.info("No changes to save");
       return;
     }
 
     // ตรวจสอบว่าข้อมูลไม่ว่างเปล่า
     if (!formData.full_name.trim() || !formData.username.trim()) {
-      toast.error("กรุณากรอกชื่อและชื่อผู้ใช้ให้ครบถ้วน");
+      toast.error("Please fill in name and username");
       return;
     }
 
     // ตรวจสอบความยาวของชื่อ
     if (formData.full_name.trim().length < 2) {
-      toast.error("ชื่อต้องมีความยาวอย่างน้อย 2 ตัวอักษร");
+      toast.error("Name must be at least 2 characters long");
       return;
     }
 
     // ตรวจสอบความยาวของ username
     if (formData.username.trim().length < 3) {
-      toast.error("ชื่อผู้ใช้ต้องมีความยาวอย่างน้อย 3 ตัวอักษร");
+      toast.error("Username must be at least 3 characters long");
       return;
     }
 
     // ตรวจสอบรูปแบบของ username (ไม่ควรมีช่องว่าง)
     if (formData.username.includes(' ')) {
-      toast.error("ชื่อผู้ใช้ไม่ควรมีช่องว่าง");
+      toast.error("Username should not contain spaces");
       return;
     }
 
@@ -141,7 +141,7 @@ const Profile = () => {
     try {
       let token = localStorage.getItem('accessToken');
       if (!token) {
-        toast.error('กรุณาเข้าสู่ระบบใหม่');
+        toast.error('Please log in again');
         window.location.href = '/login';
         return;
       }
@@ -186,7 +186,7 @@ const Profile = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        throw new Error(data.message || "Failed to save profile");
       }
 
       if (data.status === 'success') {
@@ -197,9 +197,9 @@ const Profile = () => {
         setBioText('');
         localStorage.removeItem('tempBio');
         
-        toast.success("บันทึกข้อมูลสำเร็จ");
+        toast.success("Profile saved successfully");
       } else {
-        throw new Error(data.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        throw new Error(data.message || "Failed to save profile");
       }
     } catch (err) {
       console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", err);

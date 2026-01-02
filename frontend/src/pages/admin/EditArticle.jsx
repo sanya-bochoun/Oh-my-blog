@@ -7,6 +7,8 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { FiLoader } from 'react-icons/fi';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const EditArticle = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -28,7 +30,7 @@ const EditArticle = () => {
       try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
-          toast.error('กรุณาเข้าสู่ระบบ');
+          toast.error('Please log in');
           navigate('/admin/login');
           return;
         }
@@ -43,7 +45,7 @@ const EditArticle = () => {
           ? response.data.data[0]
           : response.data.data;
         if (!article) {
-          toast.error('ไม่พบข้อมูลบทความ');
+          toast.error('Article not found');
           navigate('/admin/article-management');
           return;
         }
@@ -57,7 +59,7 @@ const EditArticle = () => {
         });
       } catch (error) {
         console.error('Error fetching article:', error);
-        toast.error('ไม่สามารถดึงข้อมูลบทความได้');
+        toast.error('Failed to fetch article');
         navigate('/admin/article-management');
       }
     };
@@ -71,7 +73,7 @@ const EditArticle = () => {
       try {
         const token = localStorage.getItem('accessToken');
         if (!token) {
-          toast.error('กรุณาเข้าสู่ระบบ');
+          toast.error('Please log in');
           navigate('/admin/login');
           return;
         }
@@ -85,11 +87,11 @@ const EditArticle = () => {
         if (response.data.status === 'success') {
           setCategories(response.data.data);
         } else {
-          toast.error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
+          toast.error('Failed to fetch categories');
         }
       } catch (error) {
         console.error('Error fetching categories:', error);
-        toast.error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
+        toast.error('Failed to fetch categories');
       }
     };
 
@@ -108,7 +110,7 @@ const EditArticle = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB
-        toast.error('ขนาดไฟล์ต้องไม่เกิน 5MB');
+        toast.error('File size must not exceed 5MB');
         return;
       }
       setFormData(prev => ({
@@ -123,14 +125,14 @@ const EditArticle = () => {
     console.log('Save as draft clicked');
     try {
       if (!formData.title.trim() || !formData.categoryId) {
-        toast.error('กรุณากรอกชื่อบทความและเลือกหมวดหมู่');
+        toast.error('Please enter article title and select category');
         return;
       }
 
       setIsLoading(true);
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        toast.error('กรุณาเข้าสู่ระบบ');
+        toast.error('Please log in');
         navigate('/admin/login');
         return;
       }
@@ -153,7 +155,7 @@ const EditArticle = () => {
       });
 
       if (response.data.success) {
-        toast.success('บันทึกแบบร่างสำเร็จ');
+        toast.success('Draft saved successfully');
         setTimeout(() => {
           navigate('/admin/article-management');
         }, 1000);
@@ -161,10 +163,10 @@ const EditArticle = () => {
     } catch (error) {
       console.error('Error saving draft:', error);
       if (error.response?.status === 401) {
-        toast.error('กรุณาเข้าสู่ระบบใหม่');
+        toast.error('Please log in again');
         navigate('/admin/login');
       } else {
-        toast.error('ไม่สามารถบันทึกแบบร่างได้');
+        toast.error('Failed to save draft');
       }
     } finally {
       setIsLoading(false);
@@ -175,14 +177,14 @@ const EditArticle = () => {
     console.log('Publish clicked');
     try {
       if (!formData.title.trim() || !formData.categoryId || !formData.introduction?.trim() || !formData.content?.trim()) {
-        toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+        toast.error('Please fill in all required fields');
         return;
       }
 
       setIsLoading(true);
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        toast.error('กรุณาเข้าสู่ระบบ');
+        toast.error('Please log in');
         navigate('/admin/login');
         return;
       }
@@ -205,7 +207,7 @@ const EditArticle = () => {
       });
 
       if (response.data.success) {
-        toast.success('บันทึกและเผยแพร่บทความสำเร็จ');
+        toast.success('Article saved and published successfully');
         setTimeout(() => {
           navigate('/admin/article-management');
         }, 1000);
@@ -213,10 +215,10 @@ const EditArticle = () => {
     } catch (error) {
       console.error('Error publishing:', error);
       if (error.response?.status === 401) {
-        toast.error('กรุณาเข้าสู่ระบบใหม่');
+        toast.error('Please log in again');
         navigate('/admin/login');
       } else {
-        toast.error('ไม่สามารถเผยแพร่บทความได้');
+        toast.error('Failed to publish article');
       }
     } finally {
       setIsLoading(false);

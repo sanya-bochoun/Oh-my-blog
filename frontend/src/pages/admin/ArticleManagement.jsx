@@ -107,7 +107,7 @@ const ArticleManagement = () => {
         <h1 className="text-2xl font-semibold text-gray-900">Article management</h1>
         <Link
           to="/admin/create-article"
-          className="inline-flex items-center px-[40px] py-[12px] bg-[#26231E] text-white rounded-[999px] hover:bg-gray-800"
+          className="inline-flex items-center px-[40px] py-[12px] bg-[#26231E] text-white rounded-[999px] hover:bg-gray-800 cursor-pointer"
         >
           <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -202,7 +202,12 @@ const ArticleManagement = () => {
                   filteredArticles.map(article => (
                     <tr key={article.id}>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{article.title}</div>
+                        <Link
+                          to={`/article/${article.slug || article.id}`}
+                          className="text-sm text-gray-900 hover:text-blue-600  cursor-pointer"
+                        >
+                          {article.title}
+                        </Link>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">
@@ -228,7 +233,7 @@ const ArticleManagement = () => {
                           </Link>
                           <button
                             onClick={() => handleDeleteClick(article)}
-                            className="text-gray-600 hover:text-gray-900 cursor-pointer"
+                            className="text-gray-600 hover:text-red-600 cursor-pointer"
                           >
                             <FiTrash2 className="w-5 h-5" />
                           </button>
@@ -252,13 +257,13 @@ const ArticleManagement = () => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleCancelDelete}
-                className="px-6 py-2 text-sm font-medium text-gray-700 bg-white/80 border border-gray-300 rounded-full hover:bg-gray-50"
+                className="px-6 py-2 text-sm font-medium text-gray-700 bg-white/80 border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteArticle}
-                className="px-6 py-2 text-sm font-medium text-white bg-red-600/90 rounded-full hover:bg-red-700"
+                className="px-6 py-2 text-sm font-medium text-white bg-red-600/90 rounded-full hover:bg-red-700 cursor-pointer"
               >
                 Delete
               </button>

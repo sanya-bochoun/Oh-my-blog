@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 const ArticleCard = ({ article }) => {
   return (
-    <Link to={`/article/${article.slug}`} className="block group">
+    <Link to={`/article/${article.slug}`} className="block group cursor-pointer">
       <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1">
         {/* Thumbnail Image */}
         <div className="relative h-48 overflow-hidden">

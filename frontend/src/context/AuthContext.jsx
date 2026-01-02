@@ -42,6 +42,15 @@ export const AuthProvider = ({ children }) => {
         }
       });
 
+      // ถ้าเป็น 403 หรือ 401 แสดงว่า token ไม่ถูกต้องหรือหมดอายุ
+      if (response.status === 403 || response.status === 401) {
+        // Clear invalid token
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        setUser(null);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch user profile');
       }
@@ -52,7 +61,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(data.data.user));
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      // ไม่ log error ถ้าเป็น 403 เพราะเป็นเรื่องปกติ (token หมดอายุ)
+      if (error.message !== 'Failed to fetch user profile' || !error.message.includes('403')) {
+        console.error('Error fetching user profile:', error);
+      }
     }
   };
 
