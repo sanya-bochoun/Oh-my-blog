@@ -86,7 +86,7 @@ const CommentSection = ({ postId }) => {
 
   return (
     <div className="mt-8">
-      <h3 className="text-xl font-semibold mb-4">ความคิดเห็น</h3>
+      <h3 className="text-xl font-semibold mb-4">Comments</h3>
       
       {/* ฟอร์มสร้างคอมเมนต์ */}
       {user && (
@@ -94,7 +94,7 @@ const CommentSection = ({ postId }) => {
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="เขียนความคิดเห็น..."
+            placeholder="Write a comment..."
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
             rows="3"
           />
@@ -103,7 +103,7 @@ const CommentSection = ({ postId }) => {
             disabled={loading}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {loading ? 'กำลังส่ง...' : 'ส่งความคิดเห็น'}
+            {loading ? 'Sending...' : 'Post Comment'}
           </button>
         </form>
       )}

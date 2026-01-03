@@ -81,11 +81,11 @@ const ArticleDetail = () => {
           
           checkLikeStatus();
         } else {
-          setError('ไม่สามารถโหลดบทความได้');
+          setError('Unable to load the article.');
         }
         setLoading(false);
       } catch (err) {
-        setError(err.response?.data?.message || 'เกิดข้อผิดพลาดในการโหลดบทความ');
+        setError(err.response?.data?.message || 'Error loading the article.');
         setLoading(false);
       }
     };
@@ -121,7 +121,7 @@ const ArticleDetail = () => {
       }
     } catch (error) {
       console.error('Error toggling like:', error);
-      alert('เกิดข้อผิดพลาดในการกดไลค์');
+      alert('Failed to like the post.');
     }
   };
 
@@ -142,7 +142,7 @@ const ArticleDetail = () => {
       setComment('');
       fetchComments(article.id);
     } catch {
-      alert('เกิดข้อผิดพลาดในการส่งคอมเมนต์');
+      alert('Error submitting comment.');
     }
   };
 

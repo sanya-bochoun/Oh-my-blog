@@ -173,7 +173,7 @@ const NotificationBell = () => {
     });
     socket.on('notification', (newNotification) => {
       setActivities(prev => [newNotification, ...prev]);
-      toast.info('คุณมีแจ้งเตือนใหม่!');
+      toast.info('You have a new notification!');
     });
     return () => {
       socket.disconnect();

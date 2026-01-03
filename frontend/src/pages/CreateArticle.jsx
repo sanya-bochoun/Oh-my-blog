@@ -145,7 +145,7 @@ function CreateArticle() {
         toast.error(error.response?.data?.message || 'Please log in again');
         navigate('/login');
       } else {
-        toast.error(error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกบทความ');
+        toast.error(error.response?.data?.message || 'Failed to save article');
       }
     } finally {
       setIsSaving(false);
@@ -220,7 +220,7 @@ function CreateArticle() {
         toast.error(error.response?.data?.message || 'Please log in again');
         navigate('/login');
       } else {
-        toast.error(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเผยแพร่บทความ');
+        toast.error(error.response?.data?.message || 'Failed to publish article');
       }
     } finally {
       setIsPublishing(false);

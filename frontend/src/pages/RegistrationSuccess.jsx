@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MailCheck } from 'lucide-react';
 
 const RegistrationSuccess = () => {
   const navigate = useNavigate();
@@ -24,11 +25,21 @@ const RegistrationSuccess = () => {
           </svg>
         </div>
         
-        <h2 className="text-3xl font-bold mb-10 text-gray-800">Registration success</h2>
+        <h2 className="text-3xl font-bold mb-4 text-gray-800">Registration success</h2>
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+          <p className="text-sm text-blue-800 mb-2 flex items-center gap-2">
+            <MailCheck className="w-4 h-4" />
+            <strong>Please check your email</strong>
+          </p>
+          <p className="text-sm text-blue-700">
+            We've sent a verification link to your email address. You need to verify your email before you can log in.
+          </p>
+        </div>
         
         <button
           onClick={() => navigate('/login')}
-          className="bg-gray-900 text-white px-8 py-3 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+          className="bg-gray-900 text-white px-8 py-3 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors cursor-pointer"
         >
           Continue
         </button>

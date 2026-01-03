@@ -5,7 +5,7 @@ const AdminRoute = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>กำลังโหลด...</div>;
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'editor')) {

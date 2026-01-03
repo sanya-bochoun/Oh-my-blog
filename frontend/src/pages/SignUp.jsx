@@ -216,7 +216,7 @@ const SignUp = () => {
             className="w-full sm:w-32 mx-auto block bg-gray-900 text-white px-4 py-2 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 cursor-pointer"
             disabled={isLoading}
           >
-            {isLoading ? 'กำลังสมัคร...' : 'Sign up'}
+            {isLoading ? 'Signing up...' : 'Sign up'}
           </button>
         </form>
         

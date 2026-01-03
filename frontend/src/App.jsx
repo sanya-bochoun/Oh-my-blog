@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import ResetPassword from './pages/ResetPassword'
 import ResetPasswordByToken from './pages/ResetPasswordByToken'
 import ForgotPassword from './pages/ForgotPassword'
+import VerifyEmail from './pages/VerifyEmail'
 import BackToTopButton from './components/BackToTopButton'
 import { useAuth } from './hooks/useAuth'
 import ArticleManagement from './pages/ArticleManagement'
@@ -94,6 +95,7 @@ function App() {
           <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
           <Route path="/forgot-password" element={<MainLayout><ForgotPassword /></MainLayout>} />
           <Route path="/reset-password/:token" element={<MainLayout><ResetPasswordByToken /></MainLayout>} />
+          <Route path="/verify-email/:token" element={<MainLayout><VerifyEmail /></MainLayout>} />
           <Route path="/registration-success" element={<MainLayout><RegistrationSuccess /></MainLayout>} />
           <Route path="/profile" element={
             <ProtectedRoute>

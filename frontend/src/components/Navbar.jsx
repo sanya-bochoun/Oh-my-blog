@@ -113,7 +113,7 @@ const Navbar = () => {
                       />
                     </div>
                     <span className="font-medium text-[#26231E]">
-                      {user?.username || user?.full_name || "ผู้ใช้"}
+                      {user?.username || user?.full_name || "User"}
                     </span>
                     <svg
                       className={`w-5 h-5 transition-transform ${
@@ -284,7 +284,7 @@ const Navbar = () => {
                       />
                     </div>
                     <span className="font-medium text-[#26231E]">
-                      {user?.username || user?.full_name || 'ผู้ใช้'}
+                      {user?.username || user?.full_name || 'User'}
                     </span>
                   </div>
                   <div className="flex items-center">

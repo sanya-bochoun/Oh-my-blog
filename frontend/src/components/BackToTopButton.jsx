@@ -33,7 +33,7 @@ function BackToTopButton() {
         <button
           onClick={scrollToTop}
           className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#26231E] hover:bg-[#464440] text-white w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 cursor-pointer"
-          aria-label="กลับสู่ด้านบน"
+          aria-label="Back to top"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
