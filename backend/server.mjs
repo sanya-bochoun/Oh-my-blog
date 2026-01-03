@@ -11,6 +11,8 @@ import dotenv from 'dotenv';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 
+import logger from './utils/logger.mjs';
+import { initSentry } from './utils/sentry.mjs';
 import { testConnection } from './utils/db.mjs';
 import { validateAndExitIfInvalid } from './utils/validateEnv.mjs';
 import routes from './routes/index.mjs';
@@ -20,6 +22,8 @@ import notificationRoutes from './routes/notificationRoutes.mjs';
 import adminArticleRoutes from './routes/admin/articleRoutes.mjs';
 import articleRoutes from './routes/articleRoutes.mjs';
 import likeRoutes from './routes/likeRoutes.mjs';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.mjs';
 
 // ES modules fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +31,15 @@ const __dirname = dirname(__filename);
 
 // Load environment variables
 dotenv.config();
+
+// Initialize Sentry error tracking (must be after dotenv.config() to read SENTRY_DSN)
+initSentry();
+
+// Initialize Redis cache (optional - app can run without Redis)
+import { initRedis } from './utils/cache.mjs';
+if (process.env.REDIS_URL || process.env.REDIS_HOST) {
+  initRedis();
+}
 
 // Validate environment variables
 validateAndExitIfInvalid();
@@ -80,8 +93,22 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Logging Middleware
+// Use Morgan for HTTP request logging, integrated with Winston
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+  app.use(morgan('dev', { stream: logger.stream }));
+} else {
+  // In production, use combined format and log to Winston
+  app.use(morgan('combined', { stream: logger.stream }));
+}
+
+// Swagger API Documentation
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'true') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'My Personal Blog API Documentation',
+  }));
+  logger.info('Swagger UI available at /api-docs');
 }
 
 // ลงทะเบียน API routes
@@ -101,6 +128,33 @@ app.get('/', (req, res) => {
 });
 
 // API Health Check
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Health check endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 dbConnection:
+ *                   type: string
+ *                   example: connected
+ *                 environment:
+ *                   type: string
+ *                   example: development
+ */
 app.get('/api/health', async (req, res) => {
   try {
     // ทดสอบการเชื่อมต่อกับฐานข้อมูล
@@ -143,15 +197,26 @@ const io = new SocketIOServer(server, {
 
 // ตัวอย่าง event สำหรับ dev/debug
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  logger.info('Socket connection established', { socketId: socket.id });
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    logger.info('Socket disconnected', { socketId: socket.id });
   });
 });
 
 // เริ่มต้น server (สำหรับ local development)
 if (process.env.NODE_ENV !== 'production') {
   server.listen(PORT, () => {
+    logger.info('Server started successfully', {
+      environment: process.env.NODE_ENV,
+      port: PORT,
+      urls: {
+        base: `http://localhost:${PORT}`,
+        api: `http://localhost:${PORT}/api`,
+        health: `http://localhost:${PORT}/api/health`
+      },
+      timestamp: new Date().toISOString()
+    });
+    // Also log the formatted message for development convenience
     console.log(`✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨\n🌈 🚀 Server is running successfully! 🚀 🌈\n🔹 Environment: ${process.env.NODE_ENV}\n🔹 Port: ${PORT}\n🔹 Status: Online and ready!\n🔹 URLs: http://localhost:${PORT}\n🔹 API: http://localhost:${PORT}/api\n🔹 Health Check: http://localhost:${PORT}/api/health\n🔹 Time: ${new Date().toLocaleString()}\n🌟 Happy coding! 💻 ✨\n✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨`);
   });
 }

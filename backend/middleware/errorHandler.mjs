@@ -27,8 +27,36 @@ class AppError extends Error {
 
 export { catchAsync, AppError };
 
+import logger from '../utils/logger.mjs';
+import { captureException } from '../utils/sentry.mjs';
+
 export const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  // Log error with structured logging
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    statusCode: err.status || 500,
+    path: req.originalUrl,
+    method: req.method,
+    ip: req.ip,
+    user: req.user?.id || 'anonymous'
+  });
+
+  // Send error to Sentry for tracking
+  captureException(err, {
+    request: {
+      url: req.originalUrl,
+      method: req.method,
+      headers: req.headers,
+      query: req.query,
+      body: req.body,
+    },
+    user: req.user ? {
+      id: req.user.id,
+      username: req.user.username,
+      email: req.user.email,
+    } : null,
+  });
   
   // Handle errors by type
   if (err.name === 'ValidationError') {

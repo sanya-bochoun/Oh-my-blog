@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import app from '../app.mjs';
-import { pool } from '../config/database.mjs';
+import { query } from '../utils/db.mjs';
 import jwt from 'jsonwebtoken';
 
 describe('User Management API', () => {
@@ -17,17 +18,18 @@ describe('User Management API', () => {
     adminToken = jwt.sign(adminUser, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Create test user
-    const result = await pool.query(
-      'INSERT INTO users (username, email, status) VALUES ($1, $2, $3) RETURNING id',
-      ['testuser', 'test@example.com', 'active']
+    const result = await query(
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
+      ['testuser', `test${Date.now()}@example.com`, 'hashedpassword']
     );
     testUserId = result.rows[0].id;
   });
 
   afterAll(async () => {
     // Clean up test data
-    await pool.query('DELETE FROM users WHERE id = $1', [testUserId]);
-    await pool.end();
+    if (testUserId) {
+      await query('DELETE FROM users WHERE id = $1', [testUserId]);
+    }
   });
 
   describe('GET /api/admin/users', () => {

@@ -1,5 +1,21 @@
 import db from '../utils/db.mjs';
-import { io } from '../server.mjs';
+
+// Lazy import io to avoid circular dependency
+let ioInstance = null;
+const getIO = async () => {
+  if (ioInstance !== null) {
+    return ioInstance;
+  }
+  try {
+    // Try to import io from server.mjs
+    const serverModule = await import('../server.mjs');
+    ioInstance = serverModule.io || { emit: () => {} };
+  } catch (error) {
+    // io not available (e.g., in test environment or circular dependency)
+    ioInstance = { emit: () => {} };
+  }
+  return ioInstance;
+};
 
 /**
  * ดึงรายการแจ้งเตือนและกิจกรรมล่าสุด
@@ -200,11 +216,19 @@ export const createNotification = async (userId, type, message, link = null, dat
     const userResult = await db.query('SELECT full_name as user_name, avatar_url as user_avatar FROM users WHERE id = $1', [data.user_id || userId]);
     const user = userResult.rows[0] || {};
     // emit event ไปยัง client ทุกคน (หรือจะ filter ตาม userId ก็ได้)
-    io.emit('notification', {
-      ...notification,
-      user_name: user.user_name,
-      user_avatar: user.user_avatar
-    });
+    try {
+      const socketIO = await getIO();
+      if (socketIO && socketIO.emit) {
+        socketIO.emit('notification', {
+          ...notification,
+          user_name: user.user_name,
+          user_avatar: user.user_avatar
+        });
+      }
+    } catch (error) {
+      // Socket.IO not available, skip emit
+      console.warn('Socket.IO not available, skipping notification emit');
+    }
     return notification;
   } catch (error) {
     console.error('Create notification error:', error);
