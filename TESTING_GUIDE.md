@@ -36,6 +36,8 @@
 
 ### ทดสอบด้วย API:
 
+#### สำหรับ Bash/Linux/Mac:
+
 ```bash
 # 1. Register
 curl -X POST http://localhost:5000/api/auth/register \
@@ -58,6 +60,34 @@ curl -X POST http://localhost:5000/api/auth/resend-verification \
   -d '{"email": "test@example.com"}'
 ```
 
+#### สำหรับ PowerShell (Windows):
+
+```powershell
+# 1. Register - วิธีที่ 1: ใช้ JSON string (แนะนำ - ง่ายที่สุด)
+$body = '{"username":"testuser","email":"test@example.com","password":"Test1234","full_name":"Test User"}'
+$response = Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body
+$response | ConvertTo-Json
+
+# 1. Register - วิธีที่ 2: ใช้ hashtable (PowerShell native)
+$body = @{
+    username = "testuser"
+    email = "test@example.com"
+    password = "Test1234"
+    full_name = "Test User"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body
+
+# 2. Check email for verification token
+
+# 3. Verify email (ใช้ token จาก email - แทน {token} ด้วย token จริง)
+Invoke-RestMethod -Uri http://localhost:5000/api/auth/verify-email/{token} -Method Get
+
+# 4. Resend verification email
+$body = '{"email":"test@example.com"}'
+Invoke-RestMethod -Uri http://localhost:5000/api/auth/resend-verification -Method Post -ContentType "application/json" -Body $body
+```
+
 ---
 
 ## ข้อ 2: Password Strength Validation
@@ -65,6 +95,8 @@ curl -X POST http://localhost:5000/api/auth/resend-verification \
 ### ทดสอบ Password Requirements
 
 ทดสอบด้วย API หรือ Frontend:
+
+#### สำหรับ Bash/Linux/Mac:
 
 ```bash
 # ❌ Test 1: Password น้อยกว่า 8 ตัวอักษร (ควร fail)
@@ -123,7 +155,39 @@ curl -X POST http://localhost:5000/api/auth/register \
 # Expected: Success
 ```
 
+#### สำหรับ PowerShell (Windows):
+
+```powershell
+# ❌ Test 1: Password น้อยกว่า 8 ตัวอักษร (ควร fail)
+$body = '{"username":"testuser2","email":"test2@example.com","password":"Test12","full_name":"Test User"}'
+try { Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body } catch { $_.ErrorDetails.Message }
+# Expected: Error "Password must be at least 8 characters long"
+
+# ❌ Test 2: Password ไม่มีตัวพิมพ์ใหญ่ (ควร fail)
+$body = '{"username":"testuser3","email":"test3@example.com","password":"test1234","full_name":"Test User"}'
+try { Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body } catch { $_.ErrorDetails.Message }
+# Expected: Error "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+
+# ❌ Test 3: Password ไม่มีตัวพิมพ์เล็ก (ควร fail)
+$body = '{"username":"testuser4","email":"test4@example.com","password":"TEST1234","full_name":"Test User"}'
+try { Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body } catch { $_.ErrorDetails.Message }
+# Expected: Error "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+
+# ❌ Test 4: Password ไม่มีตัวเลข (ควร fail)
+$body = '{"username":"testuser5","email":"test5@example.com","password":"TestPassword","full_name":"Test User"}'
+try { Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body } catch { $_.ErrorDetails.Message }
+# Expected: Error "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+
+# ✅ Test 5: Password ถูกต้อง (ควรผ่าน)
+$body = '{"username":"testuser6","email":"test6@example.com","password":"Test1234","full_name":"Test User"}'
+$response = Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body
+$response | ConvertTo-Json
+# Expected: Success response with user data
+```
+
 ### ทดสอบ Reset Password:
+
+#### สำหรับ Bash/Linux/Mac:
 
 ```bash
 # ❌ Test: Password ใหม่ไม่ตรงตาม requirements
@@ -137,6 +201,21 @@ curl -X POST http://localhost:5000/api/auth/reset-password/{token} \
   -H "Content-Type: application/json" \
   -d '{"password": "NewPass123"}'
 # Expected: Success
+```
+
+#### สำหรับ PowerShell (Windows):
+
+```powershell
+# ❌ Test: Password ใหม่ไม่ตรงตาม requirements
+$body = '{"password":"weak"}'
+try { Invoke-RestMethod -Uri http://localhost:5000/api/auth/reset-password/{token} -Method Post -ContentType "application/json" -Body $body } catch { $_.ErrorDetails.Message }
+# Expected: Error (password validation failed)
+
+# ✅ Test: Password ใหม่ถูกต้อง
+$body = '{"password":"NewPass123"}'
+$response = Invoke-RestMethod -Uri http://localhost:5000/api/auth/reset-password/{token} -Method Post -ContentType "application/json" -Body $body
+$response | ConvertTo-Json
+# Expected: Success response
 ```
 
 ---
@@ -167,6 +246,8 @@ curl -X POST http://localhost:5000/api/auth/reset-password/{token} \
 ## ข้อ 4: Rate Limiting สำหรับ Auth Routes
 
 ### ทดสอบ Rate Limiting:
+
+#### สำหรับ Bash/Linux/Mac:
 
 ```bash
 # Test 1: Login Rate Limiting (5 attempts per 15 minutes)
@@ -201,6 +282,59 @@ for i in {1..4}; do
     -d "{\"email\": \"test$i@example.com\"}"
   echo "Attempt $i"
 done
+# Expected: ครั้งที่ 4 ควรได้ 429 Too Many Requests
+```
+
+#### สำหรับ PowerShell (Windows):
+
+```powershell
+# Test 1: Login Rate Limiting (5 attempts per 15 minutes)
+# ทำการ login ผิด 6 ครั้งติดกัน:
+
+1..6 | ForEach-Object {
+  $i = $_
+  $body = '{"email":"wrong@example.com","password":"wrong"}'
+  try { 
+    Invoke-RestMethod -Uri http://localhost:5000/api/auth/login -Method Post -ContentType "application/json" -Body $body
+  } catch {
+    Write-Host "Attempt $i - Status: $($_.Exception.Response.StatusCode.value__)"
+    if ($_.Exception.Response.StatusCode.value__ -eq 429) {
+      Write-Host "  Rate limit exceeded!" -ForegroundColor Red
+    }
+  }
+}
+# Expected: ครั้งที่ 6 ควรได้ 429 Too Many Requests
+
+# Test 2: Register Rate Limiting (3 attempts per hour)
+1..4 | ForEach-Object {
+  $i = $_
+  $body = "{\"username\":\"test$i\",\"email\":\"test$i@example.com\",\"password\":\"Test1234\",\"full_name\":\"Test User\"}"
+  try {
+    Invoke-RestMethod -Uri http://localhost:5000/api/auth/register -Method Post -ContentType "application/json" -Body $body
+    Write-Host "Attempt $i - Success"
+  } catch {
+    Write-Host "Attempt $i - Status: $($_.Exception.Response.StatusCode.value__)"
+    if ($_.Exception.Response.StatusCode.value__ -eq 429) {
+      Write-Host "  Rate limit exceeded!" -ForegroundColor Red
+    }
+  }
+}
+# Expected: ครั้งที่ 4 ควรได้ 429 Too Many Requests
+
+# Test 3: Forgot Password Rate Limiting (3 attempts per hour)
+1..4 | ForEach-Object {
+  $i = $_
+  $body = "{\"email\":\"test$i@example.com\"}"
+  try {
+    Invoke-RestMethod -Uri http://localhost:5000/api/auth/forgot-password -Method Post -ContentType "application/json" -Body $body
+    Write-Host "Attempt $i - Success"
+  } catch {
+    Write-Host "Attempt $i - Status: $($_.Exception.Response.StatusCode.value__)"
+    if ($_.Exception.Response.StatusCode.value__ -eq 429) {
+      Write-Host "  Rate limit exceeded!" -ForegroundColor Red
+    }
+  }
+}
 # Expected: ครั้งที่ 4 ควรได้ 429 Too Many Requests
 ```
 
