@@ -67,14 +67,28 @@ export const createComment = async (req, res) => {
 export const getCommentsByPost = async (req, res) => {
   try {
     const { post_id } = req.params;
-    const result = await query(
-      `SELECT c.*, u.username, u.avatar_url 
-       FROM comments c 
-       JOIN users u ON c.user_id = u.id 
-       WHERE c.post_id = $1 
-       ORDER BY c.created_at DESC`,
-      [post_id]
-    );
+    
+    // Check if user is admin (for viewing all comments including unapproved)
+    // This endpoint is public, so req.user might be undefined
+    const isAdmin = req.user && req.user.role === 'admin';
+    
+    let queryText = `
+      SELECT c.*, u.username, u.avatar_url 
+      FROM comments c 
+      JOIN users u ON c.user_id = u.id 
+      WHERE c.post_id = $1
+    `;
+    
+    const queryParams = [post_id];
+    
+    // Filter by approval status if not admin (only show approved comments to public and non-admin users)
+    if (!isAdmin) {
+      queryText += ` AND c.is_approved = true`;
+    }
+    
+    queryText += ` ORDER BY c.created_at DESC`;
+    
+    const result = await query(queryText, queryParams);
 
     res.json({
       status: 'success',

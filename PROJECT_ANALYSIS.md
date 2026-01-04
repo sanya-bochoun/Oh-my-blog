@@ -113,37 +113,45 @@ const frontendUrl = 'http://localhost:5173'; // hardcoded!
 
 ### 🟢 **ปรับปรุงเพิ่มเติม (Low Priority)**
 
-#### 14. **Search Functionality จำกัด**
-- มี search แต่เป็นแค่ title search
-- **ควรทำ**: เพิ่ม full-text search, search by content, tags, author
+#### 14. **Search Functionality จำกัด** ✅
+- ~~มี search แต่เป็นแค่ title search~~
+- ~~**ควรทำ**: เพิ่ม full-text search, search by content, tags, author~~
+- **เสร็จแล้ว**: ปรับปรุง search ให้ค้นหาใน title, content, excerpt, tags, และ author name แล้ว
 
-#### 15. **ไม่มี Analytics/View Tracking**
-- มี `view_count` column แต่ไม่แน่ใจว่าใช้จริงหรือไม่
-- **ควรทำ**: Track article views, popular articles, user activity
+#### 15. **ไม่มี Analytics/View Tracking** ✅
+- ~~มี `view_count` column แต่ไม่แน่ใจว่าใช้จริงหรือไม่~~
+- ~~**ควรทำ**: Track article views, popular articles, user activity~~
+- **เสร็จแล้ว**: เพิ่ม view tracking ใน endpoint ที่ดูบทความ และเพิ่ม endpoint `/api/posts/popular` สำหรับ popular articles
 
-#### 16. **Comments Moderation ไม่มี Admin Interface**
-- มี `is_approved` column แต่ไม่มี admin interface
-- **ควรทำ**: เพิ่ม comments moderation ใน admin panel
+#### 16. **Comments Moderation ไม่มี Admin Interface** ✅
+- ~~มี `is_approved` column แต่ไม่มี admin interface~~
+- ~~**ควรทำ**: เพิ่ม comments moderation ใน admin panel~~
+- **เสร็จแล้ว**: สร้าง admin comment controller และ routes สำหรับ moderation (approve, reject, delete, view all comments) และอัปเดต getCommentsByPost ให้แสดงเฉพาะ approved comments สำหรับ user ทั่วไป
 
-#### 17. **Tags System ไม่ชัดเจน**
-- มี tags table แต่ไม่แน่ใจว่าใช้งานจริงหรือไม่
-- **ควรทำ**: ตรวจสอบและพัฒนาหรือลบทิ้งถ้าไม่ใช้
+#### 17. **Tags System ไม่ชัดเจน** ✅
+- ~~มี tags table แต่ไม่แน่ใจว่าใช้งานจริงหรือไม่~~
+- ~~**ควรทำ**: ตรวจสอบและพัฒนาหรือลบทิ้งถ้าไม่ใช้~~
+- **เสร็จแล้ว**: Tags system ใช้งานจริงและได้ปรับปรุงให้สมบูรณ์ขึ้น - เพิ่ม slug generation, popular tags endpoint, get tag by slug, และปรับปรุง getTagPosts ให้มี pagination และ filter published posts
 
-#### 18. **SEO Optimization ไม่มี**
-- ไม่มี meta tags, Open Graph, structured data
-- **ควรทำ**: เพิ่ม SEO features
+#### 18. **SEO Optimization ไม่มี** ✅
+- ~~ไม่มี meta tags, Open Graph, structured data~~
+- ~~**ควรทำ**: เพิ่ม SEO features~~
+- **เสร็จแล้ว**: สร้าง SEO utility functions (`frontend/src/utils/seo.js`) สำหรับจัดการ meta tags, Open Graph, Twitter Cards, และ JSON-LD structured data พร้อม documentation (`backend/docs/seo.md`)
 
-#### 19. **ไม่มี Database Backup Strategy**
-- ไม่มี documentation เกี่ยวกับ backup
-- **ควรทำ**: เพิ่ม backup strategy documentation
+#### 19. **ไม่มี Database Backup Strategy** ✅
+- ~~ไม่มี documentation เกี่ยวกับ backup~~
+- ~~**ควรทำ**: เพิ่ม backup strategy documentation~~
+- **เสร็จแล้ว**: สร้าง backup strategy documentation (`backend/docs/backup_strategy.md`) และ backup script (`backend/scripts/backupDb.mjs`) พร้อมคำแนะนำสำหรับ automated backups, cloud storage, และ disaster recovery
 
-#### 20. **ไม่มี Performance Monitoring**
-- ไม่มี APM (Application Performance Monitoring)
-- **ควรทำ**: เพิ่ม performance monitoring
+#### 20. **ไม่มี Performance Monitoring** ✅
+- ~~ไม่มี APM (Application Performance Monitoring)~~
+- ~~**ควรทำ**: เพิ่ม performance monitoring~~
+- **เสร็จแล้ว**: สร้าง performance monitoring system (`backend/utils/performance.mjs`) ที่ติดตาม request performance, database query performance, memory usage และเพิ่ม metrics API (`/api/admin/metrics`) พร้อม documentation
 
-#### 21. **ไม่มี CI/CD Pipeline**
-- ไม่มี automated testing/deployment
-- **ควรทำ**: เพิ่ม GitHub Actions หรือ CI/CD pipeline
+#### 21. **ไม่มี CI/CD Pipeline** ✅
+- ~~ไม่มี automated testing/deployment~~
+- ~~**ควรทำ**: เพิ่ม GitHub Actions หรือ CI/CD pipeline~~
+- **เสร็จแล้ว**: สร้าง GitHub Actions CI/CD pipeline (`.github/workflows/ci.yml`) สำหรับ automated testing, linting, security scanning, และ deployment
 
 ---
 

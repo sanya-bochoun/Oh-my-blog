@@ -40,7 +40,18 @@ export const getPosts = async ({ page = 1, limit = 10, category, author, tag, se
     }
 
     if (search) {
-      queryText += ` AND (p.title ILIKE $${valueIndex})`;
+      // Enhanced search: title, content, excerpt, tags, and author name
+      queryText += ` AND (
+        p.title ILIKE $${valueIndex}
+        OR p.content ILIKE $${valueIndex}
+        OR p.excerpt ILIKE $${valueIndex}
+        OR u.username ILIKE $${valueIndex}
+        OR EXISTS (
+          SELECT 1 FROM post_tags pt
+          JOIN tags t ON pt.tag_id = t.id
+          WHERE pt.post_id = p.id AND t.name ILIKE $${valueIndex}
+        )
+      )`;
       values.push(`%${search}%`);
       valueIndex++;
     }
@@ -121,7 +132,7 @@ export const createPost = async ({ title, content, author_id, category_id, excer
 };
 
 // Get post by slug
-export const getPostBySlug = async (slug) => {
+export const getPostBySlug = async (slug, incrementView = false) => {
   try {
     const result = await query(
       `SELECT 
@@ -135,7 +146,7 @@ export const getPostBySlug = async (slug) => {
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN post_tags pt ON p.id = pt.post_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE p.slug = $1
+      WHERE p.slug = $1 AND p.published = true
       GROUP BY p.id, u.username, u.avatar_url, c.name`,
       [slug]
     );
@@ -145,6 +156,21 @@ export const getPostBySlug = async (slug) => {
     }
 
     const post = result.rows[0];
+    
+    // Increment view count if requested (for public viewing)
+    if (incrementView && post.published) {
+      try {
+        await query(
+          'UPDATE posts SET view_count = view_count + 1 WHERE id = $1',
+          [post.id]
+        );
+        post.view_count = (post.view_count || 0) + 1;
+      } catch (viewError) {
+        // Don't fail the request if view count update fails
+        console.error('Error incrementing view count:', viewError);
+      }
+    }
+
     return {
       ...post,
       thumbnail_url: post.thumbnail_url || post.featured_image || null
@@ -396,6 +422,46 @@ export const getPostLikes = async (postId, userId = null) => {
   }
 };
 
+// Get popular posts (by view count)
+export const getPopularPosts = async ({ page = 1, limit = 10, days = 30 } = {}) => {
+  try {
+    const queryText = `
+      SELECT 
+        p.*,
+        u.username as author_name,
+        u.avatar_url as author_avatar,
+        c.name as category_name,
+        COUNT(*) OVER() as total_count
+      FROM posts p
+      LEFT JOIN users u ON p.author_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.published = true
+        AND p.created_at >= NOW() - ($1::text || ' days')::INTERVAL
+      ORDER BY p.view_count DESC, p.created_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    
+    const result = await query(queryText, [days, limit, (page - 1) * limit]);
+    const total = result.rows[0]?.total_count || 0;
+
+    return {
+      posts: result.rows.map(post => ({
+        ...post,
+        thumbnail_url: post.thumbnail_url || post.featured_image || null,
+        total_count: undefined
+      })),
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: parseInt(total),
+        total_pages: Math.ceil(total / limit)
+      }
+    };
+  } catch (error) {
+    throw new Error(`Failed to fetch popular posts: ${error.message}`);
+  }
+};
+
 export default {
   getPosts,
   createPost,
@@ -405,5 +471,6 @@ export default {
   togglePublishStatus,
   likePost,
   unlikePost,
-  getPostLikes
+  getPostLikes,
+  getPopularPosts
 }; 

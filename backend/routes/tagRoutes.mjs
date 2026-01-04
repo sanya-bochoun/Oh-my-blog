@@ -6,9 +6,11 @@ import {
   createTag,
   getAllTags,
   getTagById,
+  getTagBySlug,
   updateTag,
   deleteTag,
-  getTagPosts
+  getTagPosts,
+  getPopularTags
 } from '../controllers/tagController.mjs';
 
 const router = express.Router();
@@ -20,10 +22,13 @@ const tagValidation = [
 ];
 
 // Routes
-router.post('/', authenticateToken, tagValidation, createTag);
+router.post('/', authenticateToken, tagValidation, validateRequest, createTag);
 router.get('/', getAllTags);
+router.get('/popular', getPopularTags);
+router.get('/slug/:slug', getTagBySlug);
+router.get('/:id', getTagById);
 router.get('/:id/posts', getTagPosts);
-router.put('/:id', authenticateToken, tagValidation, updateTag);
+router.put('/:id', authenticateToken, tagValidation, validateRequest, updateTag);
 router.delete('/:id', authenticateToken, deleteTag);
 
 export default router; 

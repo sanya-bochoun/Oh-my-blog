@@ -20,8 +20,11 @@ import { errorHandler } from './middleware/errorHandler.mjs';
 import { notFoundHandler } from './middleware/notFoundHandler.mjs';
 import notificationRoutes from './routes/notificationRoutes.mjs';
 import adminArticleRoutes from './routes/admin/articleRoutes.mjs';
+import adminCommentRoutes from './routes/admin/commentRoutes.mjs';
+import metricsRoutes from './routes/metricsRoutes.mjs';
 import articleRoutes from './routes/articleRoutes.mjs';
 import likeRoutes from './routes/likeRoutes.mjs';
+import { performanceMiddleware } from './middleware/performanceMiddleware.mjs';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.mjs';
 
@@ -111,10 +114,15 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'tru
   logger.info('Swagger UI available at /api-docs');
 }
 
+// Performance monitoring middleware (apply to all routes)
+app.use(performanceMiddleware);
+
 // ลงทะเบียน API routes
 app.use('/api', routes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin/articles', adminArticleRoutes);
+app.use('/api/admin/comments', adminCommentRoutes);
+app.use('/api/admin/metrics', metricsRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/likes', likeRoutes);
 

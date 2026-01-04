@@ -65,10 +65,10 @@ router.post('/', authenticateToken, postValidation, validateRequest, async (req,
   }
 });
 
-// Get post by slug
+// Get post by slug (with view tracking)
 router.get('/:slug', async (req, res) => {
   try {
-    const post = await postController.getPostBySlug(req.params.slug);
+    const post = await postController.getPostBySlug(req.params.slug, true);
     
     if (!post) {
       return res.status(404).json({
@@ -171,10 +171,44 @@ router.patch('/:id/publish', authenticateToken, async (req, res) => {
   }
 });
 
-// Additional routes
-router.get('/search', async (req, res) => {
+// Get popular posts (by view count)
+router.get('/popular', [
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+  query('days').optional().isInt({ min: 1, max: 365 }).withMessage('Days must be between 1 and 365'),
+  validateRequest
+], async (req, res) => {
   try {
-    const result = await postController.searchPosts(req.query.search);
+    const result = await postController.getPopularPosts({
+      page: req.query.page || 1,
+      limit: req.query.limit || 10,
+      days: req.query.days || 30
+    });
+    res.json({
+      status: 'success',
+      data: result
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to fetch popular posts',
+      error: error.message
+    });
+  }
+});
+
+// Additional routes - Search posts (uses getPosts with search parameter)
+router.get('/search', [
+  query('search').trim().notEmpty().withMessage('Search query is required'),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+  query('category').optional().isInt().withMessage('Category must be an integer'),
+  query('author').optional().isInt().withMessage('Author must be an integer'),
+  query('tag').optional().isInt().withMessage('Tag must be an integer'),
+  validateRequest
+], async (req, res) => {
+  try {
+    const result = await postController.getPosts(req.query);
     res.json({
       status: 'success',
       data: result
