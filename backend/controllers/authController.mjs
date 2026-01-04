@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
-import db from '../utils/db.mjs';
+import { query } from '../utils/db.mjs';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { sendResetPasswordEmail, sendVerificationEmail } from '../config/email.mjs';
@@ -19,7 +19,7 @@ const register = async (req, res) => {
 
     // ตรวจสอบว่ามีอีเมลนี้ในระบบแล้วหรือไม่
     console.log('[REGISTER] Checking if user exists');
-    const userExists = await db.query(
+    const userExists = await query(
       'SELECT id FROM users WHERE email = $1 OR username = $2',
       [email, username]
     );
@@ -40,7 +40,7 @@ const register = async (req, res) => {
     try {
       // เพิ่มผู้ใช้ใหม่
       console.log('[REGISTER] Inserting new user into database');
-      const result = await db.query(
+      const result = await query(
         `INSERT INTO users (username, email, password, full_name, role, is_verified)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING id, username, email, full_name, role, is_verified, created_at`,
@@ -59,7 +59,7 @@ const register = async (req, res) => {
 
       // บันทึก verification token ลงฐานข้อมูล
       try {
-        const insertResult = await db.query(
+        const insertResult = await query(
           `INSERT INTO verification_tokens (user_id, token, type, expires_at)
            VALUES ($1, $2, $3, $4)
            RETURNING id, token, expires_at`,
@@ -113,7 +113,7 @@ const register = async (req, res) => {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 วัน
       
-      await db.query(
+      await query(
         `INSERT INTO refresh_tokens (user_id, token, expires_at)
          VALUES ($1, $2, $3)`,
         [newUser.id, refreshToken, expiresAt]
@@ -159,16 +159,18 @@ const login = async (req, res) => {
     console.log('[LOGIN] Request body:', req.body);
     const { email, username, password } = req.body;
 
-    let query, params;
+    let queryText, params;
     
     // ตรวจสอบว่าใช้ email หรือ username ในการล็อกอิน
     if (email) {
       console.log('[LOGIN] Using email:', email);
-      query = `
+      queryText = `
         SELECT 
-           id, username, email, password, role, full_name, is_locked, is_verified,
+           id, username, email, password, role, full_name, 
+           COALESCE(is_locked, false) as is_locked, 
+           is_verified,
           CASE 
-            WHEN is_locked = true THEN 'locked'
+            WHEN COALESCE(is_locked, false) = true THEN 'locked'
             ELSE 'active'
           END as status
         FROM users 
@@ -177,11 +179,13 @@ const login = async (req, res) => {
       params = [email];
     } else if (username) {
       console.log('[LOGIN] Using username:', username);
-      query = `
+      queryText = `
         SELECT 
-           id, username, email, password, role, full_name, is_locked, is_verified,
+           id, username, email, password, role, full_name, 
+           COALESCE(is_locked, false) as is_locked, 
+           is_verified,
           CASE 
-            WHEN is_locked = true THEN 'locked'
+            WHEN COALESCE(is_locked, false) = true THEN 'locked'
             ELSE 'active'
           END as status
         FROM users 
@@ -198,7 +202,7 @@ const login = async (req, res) => {
 
     // ค้นหาผู้ใช้
     console.log('[LOGIN] Querying user...');
-    const result = await db.query(query, params);
+    const result = await query(queryText, params);
     console.log('[LOGIN] Query result:', result.rows);
 
     if (result.rows.length === 0) {
@@ -264,7 +268,7 @@ const login = async (req, res) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     console.log('[LOGIN] Saving refresh token to DB...');
-    await db.query(
+    await query(
       `INSERT INTO refresh_tokens (user_id, token, expires_at)
        VALUES ($1, $2, $3)`,
       [user.id, refreshToken, expiresAt]
@@ -272,7 +276,7 @@ const login = async (req, res) => {
 
     // บันทึกข้อมูลการเข้าสู่ระบบ
     console.log('[LOGIN] Logging user session...');
-    await db.query(
+    await query(
       `INSERT INTO user_sessions (user_id, ip_address, user_agent)
        VALUES ($1, $2, $3)`,
       [user.id, req.ip, req.headers['user-agent'] || '']
@@ -297,9 +301,12 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error('[LOGIN] Login error:', error);
+    console.error('[LOGIN] Error stack:', error.stack);
     res.status(500).json({
       status: 'error',
-      message: 'Login failed'
+      message: 'Login failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
@@ -309,7 +316,7 @@ const login = async (req, res) => {
  */
 const getProfile = async (req, res) => {
   try {
-    const result = await db.query(
+    const result = await query(
       `SELECT id, username, email, full_name, avatar_url, bio, role, created_at
        FROM users
        WHERE id = $1`,
@@ -346,7 +353,7 @@ const refreshToken = async (req, res) => {
     const { refreshToken: token } = req.body;
 
     // ตรวจสอบว่า refresh token มีอยู่ในฐานข้อมูลหรือไม่
-    const tokenResult = await db.query(
+    const tokenResult = await query(
       `SELECT user_id, expires_at
        FROM refresh_tokens
        WHERE token = $1 AND expires_at > NOW()`,
@@ -392,7 +399,7 @@ const logout = async (req, res) => {
     // ลบ refresh token ออกจากฐานข้อมูล
     // ในกรณีจริงต้องส่ง refreshToken มาจาก client ด้วย
     // แต่ตอนนี้เราจะลบทุก token ของผู้ใช้นี้เพื่อความง่าย
-    await db.query(
+    await query(
       'DELETE FROM refresh_tokens WHERE user_id = $1',
       [req.userId]
     );
@@ -418,7 +425,7 @@ const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     // Check if user exists with this email
-    const userResult = await db.query('SELECT id, email FROM users WHERE email = $1', [email]);
+    const userResult = await query('SELECT id, email FROM users WHERE email = $1', [email]);
     if (userResult.rows.length === 0) {
       return res.status(404).json({
         status: 'error',
@@ -431,7 +438,7 @@ const forgotPassword = async (req, res) => {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // Expires in 1 hour
 
     // Save token to database
-    await db.query(
+    await query(
       'UPDATE users SET reset_password_token = $1, reset_password_expires = $2 WHERE email = $3',
       [resetToken, resetTokenExpiry, email]
     );
@@ -448,7 +455,7 @@ const forgotPassword = async (req, res) => {
       console.error('Error sending email:', emailError);
       
       // Revert token if email fails
-      await db.query(
+      await query(
         'UPDATE users SET reset_password_token = NULL, reset_password_expires = NULL WHERE email = $1',
         [email]
       );
@@ -490,7 +497,7 @@ const verifyEmail = async (req, res) => {
     console.log('[VERIFY_EMAIL] Querying verification_tokens table...');
     
     // First, check if token exists at all (without expiry check)
-    const tokenExistsCheck = await db.query(
+    const tokenExistsCheck = await query(
       `SELECT vt.token, vt.expires_at, vt.type
        FROM verification_tokens vt
        WHERE vt.token = $1`,
@@ -503,7 +510,7 @@ const verifyEmail = async (req, res) => {
       expiresAt: tokenExistsCheck.rows.length > 0 ? tokenExistsCheck.rows[0].expires_at : null
     });
 
-    const tokenResult = await db.query(
+    const tokenResult = await query(
       `SELECT vt.user_id, vt.expires_at, u.email, u.is_verified
        FROM verification_tokens vt
        INNER JOIN users u ON vt.user_id = u.id
@@ -519,7 +526,7 @@ const verifyEmail = async (req, res) => {
 
     if (tokenResult.rows.length === 0) {
       // Check if token exists but expired or wrong type
-      const expiredTokenResult = await db.query(
+      const expiredTokenResult = await query(
         `SELECT vt.expires_at, u.is_verified, vt.type
          FROM verification_tokens vt
          INNER JOIN users u ON vt.user_id = u.id
@@ -569,7 +576,7 @@ const verifyEmail = async (req, res) => {
     // Check if already verified
     if (is_verified) {
       // Delete the token since it's already used
-      await db.query(
+      await query(
         'DELETE FROM verification_tokens WHERE token = $1',
         [token]
       );
@@ -581,13 +588,13 @@ const verifyEmail = async (req, res) => {
 
     // Update user to verified
     console.log('[VERIFY_EMAIL] Updating user to verified:', user_id);
-    await db.query(
+    await query(
       'UPDATE users SET is_verified = $1, updated_at = NOW() WHERE id = $2',
       [true, user_id]
     );
 
     // Delete verification token
-    await db.query(
+    await query(
       'DELETE FROM verification_tokens WHERE token = $1',
       [token]
     );
@@ -621,7 +628,7 @@ const resendVerificationEmail = async (req, res) => {
     }
 
     // Check if user exists
-    const userResult = await db.query(
+    const userResult = await query(
       'SELECT id, email, is_verified FROM users WHERE email = $1',
       [email]
     );
@@ -644,7 +651,7 @@ const resendVerificationEmail = async (req, res) => {
     }
 
     // Delete old verification tokens
-    await db.query(
+    await query(
       'DELETE FROM verification_tokens WHERE user_id = $1 AND type = $2',
       [user.id, 'email_verification']
     );
@@ -654,7 +661,7 @@ const resendVerificationEmail = async (req, res) => {
     const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Save new token
-    await db.query(
+    await query(
       `INSERT INTO verification_tokens (user_id, token, type, expires_at)
        VALUES ($1, $2, $3, $4)`,
       [user.id, verificationToken, 'email_verification', verificationExpiry]
@@ -670,7 +677,7 @@ const resendVerificationEmail = async (req, res) => {
     } catch (emailError) {
       console.error('Error sending verification email:', emailError);
       // Delete token if email fails
-      await db.query(
+      await query(
         'DELETE FROM verification_tokens WHERE token = $1',
         [verificationToken]
       );
@@ -694,7 +701,7 @@ const resetPassword = async (req, res) => {
     const { password } = req.body;
 
     // Check token and expiry
-    const userResult = await db.query(
+    const userResult = await query(
       'SELECT id FROM users WHERE reset_password_token = $1 AND reset_password_expires > NOW()',
       [token]
     );
@@ -711,7 +718,7 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Update password and clear token
-    await db.query(
+    await query(
       'UPDATE users SET password = $1, reset_password_token = NULL, reset_password_expires = NULL, updated_at = NOW() WHERE reset_password_token = $2',
       [hashedPassword, token]
     );

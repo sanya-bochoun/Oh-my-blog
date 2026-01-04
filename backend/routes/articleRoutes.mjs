@@ -70,21 +70,52 @@ router.get('/', authenticateToken, async (req, res) => {
 router.get('/search', authenticateToken, async (req, res) => {
   try {
     const { q } = req.query;
-    let where = {};
-
-    // ถ้าไม่ใช่ admin หรือไม่ได้ขอดูทั้งหมด ให้ดูเฉพาะบทความของตัวเอง
-    if (req.user.role !== 'admin' || !req.query.viewAll) {
-      where.author_id = req.user.id;
+    
+    if (!q || q.trim() === '') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Search query is required'
+      });
     }
 
-    // เพิ่มเงื่อนไขการค้นหาชื่อบทความ
-    where.title = { like: `%${q}%` };
-
-    const articles = await Article.findAll({ where });
-
+    const searchTerm = `%${q.trim()}%`;
+    
+    // Enhanced search using raw SQL to search in title, content, excerpt, tags, and author name
+    let searchQuery = `
+      SELECT DISTINCT
+        a.id, a.title, a.content, a.excerpt as introduction, a.thumbnail_url, 
+        a.published as status, a.category_id, a.author_id, a.created_at, a.updated_at, a.slug,
+        c.name as category_name,
+        u.username as author_name
+      FROM posts a
+      LEFT JOIN categories c ON a.category_id = c.id
+      LEFT JOIN users u ON a.author_id = u.id
+      LEFT JOIN post_tags pt ON a.id = pt.post_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      WHERE (
+        a.title ILIKE $1
+        OR a.content ILIKE $1
+        OR a.excerpt ILIKE $1
+        OR t.name ILIKE $1
+        OR u.username ILIKE $1
+      )
+    `;
+    
+    const queryParams = [searchTerm];
+    
+    // ถ้าไม่ใช่ admin หรือไม่ได้ขอดูทั้งหมด ให้ดูเฉพาะบทความของตัวเอง
+    if (req.user.role !== 'admin' || !req.query.viewAll) {
+      searchQuery += ` AND a.author_id = $2`;
+      queryParams.push(req.user.id);
+    }
+    
+    searchQuery += ` ORDER BY a.created_at DESC`;
+    
+    const result = await query(searchQuery, queryParams);
+    
     res.json({
       status: 'success',
-      data: articles
+      data: result.rows
     });
   } catch (error) {
     console.error('Error searching articles:', error);
@@ -455,7 +486,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Get article by slug
+// Get article by slug (with view tracking)
 router.get('/detail/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
@@ -475,7 +506,7 @@ router.get('/detail/:slug', async (req, res) => {
       LEFT JOIN users u ON p.author_id = u.id
       LEFT JOIN post_likes pl ON p.id = pl.post_id
       LEFT JOIN comments cm ON p.id = cm.post_id
-      WHERE p.slug = $1
+      WHERE p.slug = $1 AND p.published = true
       GROUP BY p.id, c.name, u.username, u.avatar_url, u.bio
     `, [slug]);
 
@@ -486,9 +517,23 @@ router.get('/detail/:slug', async (req, res) => {
       });
     }
 
+    const article = result.rows[0];
+    
+    // Increment view count
+    try {
+      await query(
+        'UPDATE posts SET view_count = view_count + 1 WHERE id = $1',
+        [article.id]
+      );
+      article.view_count = (article.view_count || 0) + 1;
+    } catch (viewError) {
+      // Don't fail the request if view count update fails
+      console.error('Error incrementing view count:', viewError);
+    }
+
     res.json({
       status: 'success',
-      data: result.rows[0]
+      data: article
     });
   } catch (error) {
     console.error('Error fetching article:', error);
