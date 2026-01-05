@@ -8,7 +8,15 @@ export const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
     
+    console.log('[AUTH] Checking token:', {
+      hasAuthHeader: !!authHeader,
+      hasToken: !!token,
+      method: req.method,
+      path: req.path
+    });
+    
     if (!token) {
+      console.log('[AUTH] Token not found');
       return res.status(401).json({
         success: false,
         message: 'Authentication token not found'

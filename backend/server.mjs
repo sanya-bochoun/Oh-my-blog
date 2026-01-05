@@ -89,8 +89,10 @@ if (process.env.NODE_ENV === 'production') {
 app.use(xss());
 
 // Body Parser Middleware
-app.use(express.json({ limit: '10kb' })); // จำกัดขนาด request body
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// Note: สำหรับ multipart/form-data (multer) จะไม่ใช้ express.json/urlencoded
+// แต่จะใช้ multer middleware แทน ดังนั้น limit นี้จะใช้กับ JSON requests เท่านั้น
+app.use(express.json({ limit: '10mb' })); // เพิ่ม limit สำหรับ JSON requests
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // เพิ่ม limit สำหรับ URL-encoded requests
 
 // Serving static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

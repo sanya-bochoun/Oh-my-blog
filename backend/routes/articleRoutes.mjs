@@ -151,9 +151,42 @@ router.get('/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Error handler for multer
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'File size too large. Maximum size is 5MB'
+      });
+    }
+    return res.status(400).json({
+      status: 'error',
+      message: 'File upload error: ' + err.message
+    });
+  }
+  if (err) {
+    console.error('Multer error:', err);
+    return res.status(500).json({
+      status: 'error',
+      message: 'File upload failed'
+    });
+  }
+  next();
+};
+
 // Create article
-router.post('/', authenticateToken, upload.single('thumbnailImage'), async (req, res) => {
+router.post('/', authenticateToken, upload.single('thumbnailImage'), handleMulterError, async (req, res) => {
   try {
+    // ตรวจสอบว่า req.user มีอยู่ (จาก authenticateToken middleware)
+    if (!req.user || !req.user.id) {
+      console.error('User not found in request after authentication');
+      return res.status(401).json({
+        status: 'error',
+        message: 'Authentication failed. Please log in again.'
+      });
+    }
+
     const { title, content, categoryId, introduction, status } = req.body;
     const authorId = req.user.id;
 
